@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Греческий — Уровень 2 (Глаголы)</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #1e3a8a, #3b82f6, #93c5fd);
+    min-height: 100vh;
+    display: flex; justify-content: center; align-items: flex-start;
+    padding: 10px;
+  }
+  .card {
+    background: #fff; border-radius: 16px; padding: 20px;
+    max-width: 640px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    text-align: center;
+  }
+  h1 { margin: 0 0 4px; color: #1e40af; font-size: 20px; }
+  .subtitle {
+    color: #2563eb; font-size: 11px; margin-bottom: 10px;
+    letter-spacing: .5px; font-weight: 700;
+  }
+  .tab-switch { display: flex; gap: 6px; justify-content: center; margin-bottom: 14px; flex-wrap: wrap; }
+  .tab-switch button {
+    padding: 10px 14px; font-size: 13px; border-radius: 20px;
+    border: 2px solid #2563eb; background: #fff; color: #1e40af;
+    cursor: pointer; font-weight: 700; transition: .2s; font-family: inherit;
+  }
+  .tab-switch button.active { background: #2563eb; color: #fff; }
+  .progress { color: #888; font-size: 12px; margin-bottom: 10px; }
+  .word {
+    font-size: 38px; font-weight: bold; color: #1e40af;
+    margin: 10px 0 5px; font-family: 'Times New Roman', serif;
+    word-break: break-word; line-height: 1.15;
+  }
+  .word.rus-word {
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: #1e3a8a; font-size: 32px;
+  }
+  .question { font-size: 15px; margin-bottom: 14px; color: #333; font-weight: 600; }
+  .options { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  button.opt {
+    padding: 15px 14px; font-size: 16px; border: 2px solid #2563eb;
+    background: #fff; color: #1e40af; border-radius: 10px;
+    cursor: pointer; transition: all .15s; font-weight: 600;
+    font-family: inherit; text-align: center; line-height: 1.3; min-height: 52px;
+  }
+  button.opt.greek { font-family: 'Times New Roman', serif; font-size: 20px; color: #1e40af; }
+  button.opt:active:not(:disabled) { background: #2563eb; color: #fff; }
+  button.opt:disabled { cursor: default; opacity: .75; }
+  button.opt.correct { background: #22c55e !important; color: #fff !important; border-color: #22c55e; }
+  button.opt.wrong { background: #ef4444 !important; color: #fff !important; border-color: #ef4444; }
+  .feedback { margin-top: 14px; font-size: 16px; font-weight: 700; min-height: 22px; }
+  .feedback.ok { color: #22c55e; }
+  .feedback.no { color: #ef4444; }
+  .info {
+    display: none; margin-top: 12px; text-align: left;
+    background: #eff6ff; border-left: 4px solid #2563eb;
+    border-radius: 8px; padding: 12px 14px; font-size: 14px;
+    color: #333; line-height: 1.55;
+  }
+  .info.show { display: block; animation: fade .25s ease; }
+  @keyframes fade { from {opacity:0; transform: translateY(-4px);} to {opacity:1;} }
+  .info .row { margin: 4px 0; }
+  .info .lbl { display: inline-block; min-width: 120px; font-weight: 700; color: #1e40af; }
+  .next {
+    margin-top: 14px; background: #93c5fd; color: #1e3a8a;
+    padding: 16px 24px; display: none;
+    font-weight: 700; border-radius: 12px; cursor: pointer; border: none;
+    font-family: inherit; font-size: 16px; width: 100%; min-height: 52px;
+    box-shadow: 0 3px 8px rgba(0,0,0,.15);
+  }
+  .next:active { background: #60a5fa !important; }
+  .score { margin-top: 12px; font-size: 12.5px; color: #666; }
+  @media (max-width: 600px) {
+    body { padding: 6px; }
+    .card { padding: 14px; border-radius: 12px; }
+    h1 { font-size: 17px; }
+    .word { font-size: 30px; }
+    .word.rus-word { font-size: 26px; }
+    button.opt { padding: 13px 12px; font-size: 15px; }
+    button.opt.greek { font-size: 18px; }
+    .info .lbl { min-width: 100px; }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>🏛️ Уровень 2 — Глаголы</h1>
+  <div class="subtitle">🔵 НОВЫЙ ЗАВЕТ • 200 ГЛАГОЛОВ</div>
+
+  <div class="tab-switch">
+    <button id="tabGrRu" class="active" onclick="setTab('gr-ru')">🇬🇷 → 🇷🇺</button>
+    <button id="tabRuGr" onclick="setTab('ru-gr')">🇷🇺 → 🇬🇷</button>
+  </div>
+
+  <div class="progress" id="progress"></div>
+  <div class="word" id="word">—</div>
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback"></div>
+  <div class="info" id="info"></div>
+  <button class="next" id="nextBtn" onclick="nextCard()">Дальше →</button>
+  <div class="score" id="score"></div>
+</div>
+
+<script>
+/* =========================================================
+   СЛОВАРЬ — Уровень 2: 200 глаголов Нового Завета
+   ========================================================= */
+const words = [
+  /* ========== 1-е спряжение (-ω) ========== */
+  {word:"λέγω", tr:"я говорю", type:"verb", conj:"1", person:"1s"},
+  {word:"ἀκούω", tr:"я слышу", type:"verb", conj:"1", person:"1s"},
+  {word:"βλέπω", tr:"я вижу", type:"verb", conj:"1", person:"1s"},
+  {word:"γινώσκω", tr:"я знаю", type:"verb", conj:"1", person:"1s"},
+  {word:"πιστεύω", tr:"я верю", type:"verb", conj:"1", person:"1s"},
+  {word:"ἀγαπάω", tr:"я люблю", type:"verb", conj:"1", person:"1s"},
+  {word:"λαλέω", tr:"я говорю", type:"verb", conj:"1", person:"1s"},
+  {word:"ἔχω", tr:"я имею", type:"verb", conj:"1", person:"1s"},
+  {word:"θέλω", tr:"я хочу", type:"verb", conj:"1", person:"1s"},
+  {word:"γράφω", tr:"я пишу", type:"verb", conj:"1", person:"1s"},
+  {word:"πέμπω", tr:"я посылаю", type:"verb", conj:"1", person:"1s"},
+  {word:"ἀποστέλλω", tr:"я посылаю", type:"verb", conj:"1", person:"1s"},
+  {word:"λαμβάνω", tr:"я беру", type:"verb", conj:"1", person:"1s"},
+  {word:"φέρω", tr:"я несу", type:"verb", conj:"1", person:"1s"},
+  {word:"σῴζω", tr:"я спасаю", type:"verb", conj:"1", person:"1s"},
+  {word:"κρίνω", tr:"я сужу", type:"verb", conj:"1", person:"1s"},
+  {word:"μένω", tr:"я остаюсь", type:"verb", conj:"1", person:"1s"},
+  {word:"διδάσκω", tr:"я учу", type:"verb", conj:"1", person:"1s"},
+  {word:"ἄγω", tr:"я веду", type:"verb", conj:"1", person:"1s"},
+  {word:"βάλλω", tr:"я бросаю", type:"verb", conj:"1", person:"1s"},
+  {word:"ἐγείρω", tr:"я поднимаю", type:"verb", conj:"1", person:"1s"},
+  {word:"αἴρω", tr:"я поднимаю, беру", type:"verb", conj:"1", person:"1s"},
+  {word:"ἁμαρτάνω", tr:"я грешу", type:"verb", conj:"1", person:"1s"},
+  {word:"ἀποκτείνω", tr:"я убиваю", type:"verb", conj:"1", person:"1s"},
+  {word:"ἀπολύω", tr:"я отпускаю", type:"verb", conj:"1", person:"1s"},
+  {word:"ἀπέχω", tr:"я получаю", type:"verb", conj:"1", person:"1s"},
+  {word:"βαπτίζω", tr:"я крещу", type:"verb", conj:"1", person:"1s"},
+  {word:"βλασφημέω", tr:"я богохульствую", type:"verb", conj:"1", person:"1s"},
+  {word:"γαμέω", tr:"я женюсь", type:"verb", conj:"1", person:"1s"},
+  {word:"γεννάω", tr:"я рождаю", type:"verb", conj:"1", person:"1s"},
+  {word:"γεύομαι (3)", tr:"я вкушаю", type:"verb", conj:"3", person:"1s"},
+  {word:"γρηγορέω", tr:"я бодрствую", type:"verb", conj:"1", person:"1s"},
+  {word:"δαιμονίζομαι (3)", tr:"я одержим бесом", type:"verb", conj:"3", person:"1s"},
+  {word:"δέω", tr:"я связываю", type:"verb", conj:"1", person:"1s"},
+  {word:"δηλόω", tr:"я показываю", type:"verb", conj:"1", person:"1s"},
+  {word:"διακονέω", tr:"я служу", type:"verb", conj:"1", person:"1s"},
+  {word:"διδάσκω", tr:"я учу", type:"verb", conj:"1", person:"1s"},
+  {word:"διέρχομαι (3)", tr:"я прохожу", type:"verb", conj:"3", person:"1s"},
+  {word:"δικαιόω", tr:"я оправдываю", type:"verb", conj:"1", person:"1s"},
+  {word:"δοξάζω", tr:"я прославляю", type:"verb", conj:"1", person:"1s"},
+  {word:"δύναμαι (3)", tr:"я могу", type:"verb", conj:"3", person:"1s"},
+  {word:"ἐάω", tr:"я позволяю", type:"verb", conj:"1", person:"1s"},
+  {word:"ἐγγίζω", tr:"я приближаюсь", type:"verb", conj:"1", person:"1s"},
+  {word:"ἐγκαταλείπω", tr:"я оставляю", type:"verb", conj:"1", person:"1s"},
+  {word:"ἐκβάλλω", tr:"я изгоняю", type:"verb", conj:"1", person:"1s"},
+  {word:"ἐκλέγομαι (3)", tr:"я избираю", type:"verb", conj:"3", person:"1s"},
+  {word:"ἐλπίζω", tr:"я надеюсь", type:"verb", conj:"1", person:"1s"},
+  {word:"ἐμπαίζω", tr:"я насмехаюсь", type:"verb", conj:"1", person:"1s"},
+  {word:"ἐνδύω", tr:"я одеваю", type:"verb", conj:"1", person:"1s"},
+  {word:"ἐξέρχομαι (3)", tr:"я выхожу", type:"verb", conj:"3", person:"1s"},
+  {word:"ἑτοιμάζω", tr:"я готовлю", type:"verb", conj:"1", person:"1s"},
+  {word:"εὐαγγελίζω", tr:"я благовествую", type:"verb", conj:"1", person:"1s"},
+  {word:"εὐχαριστέω", tr:"я благодарю", type:"verb", conj:"1", person:"1s"},
+  {word:"ἔχω", tr:"я имею", type:"verb", conj:"1", person:"1s"},
+  {word:"ζάω", tr:"я живу", type:"verb", conj:"1", person:"1s"},
+  {word:"ζητέω", tr:"я ищу", type:"verb", conj:"1", person:"1s"},
+  {word:"ἡγέομαι (3)", tr:"я считаю", type:"verb", conj:"3", person:"1s"},
+  {word:"ἦλθον", tr:"я пришёл (аор.)", type:"verb", conj:"1", person:"1s"},
+  {word:"θαυμάζω", tr:"я удивляюсь", type:"verb", conj:"1", person:"1s"},
+  {word:"θεραπεύω", tr:"я исцеляю", type:"verb", conj:"1", person:"1s"},
+  {word:"θεωρέω", tr:"я вижу, наблюдаю", type:"verb", conj:"1", person:"1s"},
+  {word:"θύω", tr:"я приношу в жертву", type:"verb", conj:"1", person:"1s"},
+  {word:"καθαρίζω", tr:"я очищаю", type:"verb", conj:"1", person:"1s"},
+  {word:"καλέω", tr:"я зову, называю", type:"verb", conj:"1", person:"1s"},
+  {word:"καλύπτω", tr:"я покрываю", type:"verb", conj:"1", person:"1s"},
+  {word:"καταβαίνω", tr:"я спускаюсь", type:"verb", conj:"1", person:"1s"},
+  {word:"καταλείπω", tr:"я оставляю", type:"verb", conj:"1", person:"1s"},
+  {word:"κατοικέω", tr:"я обитаю", type:"verb", conj:"1", person:"1s"},
+  {word:"κηρύσσω", tr:"я проповедую", type:"verb", conj:"1", person:"1s"},
+  {word:"κοιμάομαι (3)", tr:"я сплю", type:"verb", conj:"3", person:"1s"},
+  {word:"κοπιάω", tr:"я тружусь", type:"verb", conj:"1", person:"1s"},
+  {word:"κράζω", tr:"я взываю", type:"verb", conj:"1", person:"1s"},
+  {word:"κρύπτω", tr:"я скрываю", type:"verb", conj:"1", person:"1s"},
+  {word:"κύπτω", tr:"я наклоняюсь", type:"verb", conj:"1", person:"1s"},
+  {word:"λύω", tr:"я развязываю", type:"verb", conj:"1", person:"1s"},
+  {word:"μαρτυρέω", tr:"я свидетельствую", type:"verb", conj:"1", person:"1s"},
+  {word:"μένω", tr:"я остаюсь", type:"verb", conj:"1", person:"1s"},
+  {word:"μιμνήσκομαι (3)", tr:"я вспоминаю", type:"verb", conj:"3", person:"1s"},
+  {word:"μισέω", tr:"я ненавижу", type:"verb", conj:"1", person:"1s"},
+  {word:"νομίζω", tr:"я думаю", type:"verb", conj:"1", person:"1s"},
+  {word:"νοέω", tr:"я понимаю", type:"verb", conj:"1", person:"1s"},
+  {word:"οἶδα", tr:"я знаю", type:"verb", conj:"1", person:"1s"},
+  {word:"ὀνομάζω", tr:"я называю", type:"verb", conj:"1", person:"1s"},
+  {word:"ὀργίζομαι (3)", tr:"я гневаюсь", type:"verb", conj:"3", person:"1s"},
+  {word:"ὁράω", tr:"я вижу", type:"verb", conj:"1", person:"1s"},
+  {word:"ὀφείλω", tr:"я должен", type:"verb", conj:"1", person:"1s"},
+  {word:"παιδεύω", tr:"я воспитываю", type:"verb", conj:"1", person:"1s"},
+  {word:"παραβαίνω", tr:"я преступаю", type:"verb", conj:"1", person:"1s"},
+  {word:"παραδίδωμι (2)", tr:"я предаю", type:"verb", conj:"2", person:"1s"},
+  {word:"παρακαλέω", tr:"я прошу, утешаю", type:"verb", conj:"1", person:"1s"},
+  {word:"παραλαμβάνω", tr:"я принимаю", type:"verb", conj:"1", person:"1s"},
+  {word:"πείθω", tr:"я убеждаю", type:"verb", conj:"1", person:"1s"},
+  {word:"πεινάω", tr:"я голодаю", type:"verb", conj:"1", person:"1s"},
+  {word:"πίνω", tr:"я пью", type:"verb", conj:"1", person:"1s"},
+  {word:"πίπτω", tr:"я падаю", type:"verb", conj:"1", person:"1s"},
+  {word:"πιστεύω", tr:"я верю", type:"verb", conj:"1", person:"1s"},
+  {word:"πλανάω", tr:"я обманываю", type:"verb", conj:"1", person:"1s"},
+  {word:"πληρόω", tr:"я исполняю", type:"verb", conj:"1", person:"1s"},
+  {word:"ποιέω", tr:"я делаю", type:"verb", conj:"1", person:"1s"},
+  {word:"πορεύομαι (3)", tr:"я иду", type:"verb", conj:"3", person:"1s"},
+  {word:"πράσσω", tr:"я делаю", type:"verb", conj:"1", person:"1s"},
+  {word:"προσεύχομαι (3)", tr:"я молюсь", type:"verb", conj:"3", person:"1s"},
+  {word:"προφητεύω", tr:"я пророчествую", type:"verb", conj:"1", person:"1s"},
+  {word:"ῥαπίζω", tr:"я ударяю", type:"verb", conj:"1", person:"1s"},
+  {word:"ῥύομαι (3)", tr:"я избавляю", type:"verb", conj:"3", person:"1s"},
+  {word:"σπείρω", tr:"я сею", type:"verb", conj:"1", person:"1s"},
+  {word:"στρέφω", tr:"я поворачиваю", type:"verb", conj:"1", person:"1s"},
+  {word:"συνάγω", tr:"я собираю", type:"verb", conj:"1", person:"1s"},
+  {word:"σῴζω", tr:"я спасаю", type:"verb", conj:"1", person:"1s"},
+  {word:"τηρέω", tr:"я соблюдаю", type:"verb", conj:"1", person:"1s"},
+  {word:"τίθημι (2)", tr:"я кладу", type:"verb", conj:"2", person:"1s"},
+  {word:"τίκτω", tr:"я рождаю", type:"verb", conj:"1", person:"1s"},
+  {word:"τιμάω", tr:"я почитаю", type:"verb", conj:"1", person:"1s"},
+  {word:"τρώγω", tr:"я ем", type:"verb", conj:"1", person:"1s"},
+  {word:"ὑπάγω", tr:"я ухожу", type:"verb", conj:"1", person:"1s"},
+  {word:"ὑπακούω", tr:"я слушаюсь", type:"verb", conj:"1", person:"1s"},
+  {word:"ὑπομένω", tr:"я терплю", type:"verb", conj:"1", person:"1s"},
+  {word:"ὑποστρέφω", tr:"я возвращаюсь", type:"verb", conj:"1", person:"1s"},
+  {word:"φαίνομαι (3)", tr:"я являюсь", type:"verb", conj:"3", person:"1s"},
+  {word:"φανερόω", tr:"я открываю", type:"verb", conj:"1", person:"1s"},
+  {word:"φεύγω", tr:"я убегаю", type:"verb", conj:"1", person:"1s"},
+  {word:"φιλέω", tr:"я люблю", type:"verb", conj:"1", person:"1s"},
+  {word:"φοβέομαι (3)", tr:"я боюсь", type:"verb", conj:"3", person:"1s"},
+  {word:"φυλάσσω", tr:"я охраняю", type:"verb", conj:"1", person:"1s"},
+  {word:"χαίρω", tr:"я радуюсь", type:"verb", conj:"1", person:"1s"},
+  {word:"χαρίζομαι (3)", tr:"я дарую", type:"verb", conj:"3", person:"1s"},
+  {word:"χωρίζω", tr:"я разделяю", type:"verb", conj:"1", person:"1s"},
+  {word:"ψεύδομαι (3)", tr:"я лгу", type:"verb", conj:"3", person:"1s"},
+
+  /* ========== 2-е спряжение (-μι) ========== */
+  {word:"δίδωμι", tr:"я даю", type:"verb", conj:"2", person:"1s"},
+  {word:"τίθημι", tr:"я кладу", type:"verb", conj:"2", person:"1s"},
+  {word:"ἵστημι", tr:"я ставлю", type:"verb", conj:"2", person:"1s"},
+  {word:"ἀφίημι", tr:"я прощаю", type:"verb", conj:"2", person:"1s"},
+  {word:"ἀποδίδωμι", tr:"я отдаю", type:"verb", conj:"2", person:"1s"},
+  {word:"ἐπιτίθημι", tr:"я возлагаю", type:"verb", conj:"2", person:"1s"},
+  {word:"παρίστημι", tr:"я представляю", type:"verb", conj:"2", person:"1s"},
+  {word:"ἀνίστημι", tr:"я воскресаю", type:"verb", conj:"2", person:"1s"},
+  {word:"καθίστημι", tr:"я поставляю", type:"verb", conj:"2", person:"1s"},
+  {word:"μεθίστημι", tr:"я переставляю", type:"verb", conj:"2", person:"1s"},
+
+  /* ========== Медиопассив / депонентные (-μαι) ========== */
+  {word:"ἔρχομαι", tr:"я иду", type:"verb", conj:"3", person:"1s"},
+  {word:"γίνομαι", tr:"я становлюсь", type:"verb", conj:"3", person:"1s"},
+  {word:"πορεύομαι", tr:"я иду", type:"verb", conj:"3", person:"1s"},
+  {word:"προσεύχομαι", tr:"я молюсь", type:"verb", conj:"3", person:"1s"},
+  {word:"βούλομαι", tr:"я хочу", type:"verb", conj:"3", person:"1s"},
+  {word:"ἀποκρίνομαι", tr:"я отвечаю", type:"verb", conj:"3", person:"1s"},
+  {word:"ἐργάζομαι", tr:"я работаю", type:"verb", conj:"3", person:"1s"},
+  {word:"λογίζομαι", tr:"я считаю", type:"verb", conj:"3", person:"1s"},
+  {word:"ἀπέρχομαι", tr:"я ухожу", type:"verb", conj:"3", person:"1s"},
+  {word:"ἀνέρχομαι", tr:"я восхожу", type:"verb", conj:"3", person:"1s"},
+  {word:"διέρχομαι", tr:"я прохожу", type:"verb", conj:"3", person:"1s"},
+  {word:"εἰσέρχομαι", tr:"я вхожу", type:"verb", conj:"3", person:"1s"},
+  {word:"ἐξέρχομαι", tr:"я выхожу", type:"verb", conj:"3", person:"1s"},
+  {word:"κατέρχομαι", tr:"я нисхожу", type:"verb", conj:"3", person:"1s"},
+  {word:"παρέρχομαι", tr:"я прохожу мимо", type:"verb", conj:"3", person:"1s"},
+  {word:"προσέρχομαι", tr:"я подхожу", type:"verb", conj:"3", person:"1s"},
+  {word:"συνέρχομαι", tr:"я собираюсь", type:"verb", conj:"3", person:"1s"},
+  {word:"ἅπτομαι", tr:"я касаюсь", type:"verb", conj:"3", person:"1s"},
+  {word:"ἄρχομαι", tr:"я начинаю", type:"verb", conj:"3", person:"1s"},
+  {word:"δέχομαι", tr:"я принимаю", type:"verb", conj:"3", person:"1s"},
+  {word:"ἐνδύομαι", tr:"я одеваюсь", type:"verb", conj:"3", person:"1s"},
+  {word:"ἐπαγγέλλομαι", tr:"я обещаю", type:"verb", conj:"3", person:"1s"},
+  {word:"ἐπιστρέφω", tr:"я обращаюсь", type:"verb", conj:"1", person:"1s"},
+  {word:"ἡγέομαι", tr:"я считаю", type:"verb", conj:"3", person:"1s"},
+  {word:"ἰάομαι", tr:"я исцеляю", type:"verb", conj:"3", person:"1s"},
+  {word:"καυχάομαι", tr:"я хвалюсь", type:"verb", conj:"3", person:"1s"},
+  {word:"κρίνομαι", tr:"я сужусь", type:"verb", conj:"3", person:"1s"},
+  {word:"μιμνήσκομαι", tr:"я вспоминаю", type:"verb", conj:"3", person:"1s"},
+  {word:"ὀργίζομαι", tr:"я гневаюсь", type:"verb", conj:"3", person:"1s"},
+  {word:"ὀφείλομαι", tr:"я должен", type:"verb", conj:"3", person:"1s"},
+  {word:"παρακαλέω", tr:"я прошу", type:"verb", conj:"1", person:"1s"},
+  {word:"πείθομαι", tr:"я слушаюсь", type:"verb", conj:"3", person:"1s"},
+  {word:"πλανάομαι", tr:"я заблуждаюсь", type:"verb", conj:"3", person:"1s"},
+  {word:"πορεύθητι (имп.)", tr:"иди!", type:"verb", conj:"3", person:"2s"},
+  {word:"προσκαλέομαι", tr:"я призываю", type:"verb", conj:"3", person:"1s"},
+  {word:"σέβομαι", tr:"я почитаю", type:"verb", conj:"3", person:"1s"},
+  {word:"σπείρομαι", tr:"я сеюсь", type:"verb", conj:"3", person:"1s"},
+  {word:"φοβέομαι", tr:"я боюсь", type:"verb", conj:"3", person:"1s"},
+  {word:"χαρίζομαι", tr:"я дарую", type:"verb", conj:"3", person:"1s"},
+  {word:"ψεύδομαι", tr:"я лгу", type:"verb", conj:"3", person:"1s"}
+];
+
+/* =========================================================
+   СПРАВОЧНИКИ
+   ========================================================= */
+const conjRus = {"1":"1-е спряжение (-ω)","2":"2-е спряжение (-μι)","3":"Медиопассив / депонент (-μαι)"};
+const personRus = {
+  "1s":"1-е лицо ед. ч. — «я»",
+  "2s":"2-е лицо ед. ч. — «ты»",
+  "3s":"3-е лицо ед. ч. — «он/она/оно»",
+  "1p":"1-е лицо мн. ч. — «мы»",
+  "2p":"2-е лицо мн. ч. — «вы»",
+  "3p":"3-е лицо мн. ч. — «они»"
+};
+
+function buildRule(w) {
+  const conj = conjRus[w.conj];
+  const person = personRus[w.person] || "";
+  return `Глагол ${conj}. Словарная форма — 1 л. ед. ч. настоящего времени. Лицо: ${person}.`;
+}
+
+/* =========================================================
+   СОСТОЯНИЕ
+   ========================================================= */
+let tab = "gr-ru";
+let deck = [];
+let current = null;
+let answered = false;
+let score = 0, total = 0;
+
+function shuffle(a) {
+  const arr = a.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function buildDeck() {
+  deck = shuffle(words.slice());
+}
+
+function setTab(t) {
+  tab = t;
+  document.getElementById("tabGrRu").classList.toggle("active", t === "gr-ru");
+  document.getElementById("tabRuGr").classList.toggle("active", t === "ru-gr");
+  score = 0; total = 0;
+  buildDeck();
+  nextCard();
+}
+
+function nextCard() {
+  if (deck.length === 0) buildDeck();
+  current = deck.pop();
+  answered = false;
+
+  const fb = document.getElementById("feedback");
+  fb.textContent = ""; fb.className = "feedback";
+  const info = document.getElementById("info");
+  info.className = "info"; info.innerHTML = "";
+  document.getElementById("nextBtn").style.display = "none";
+
+  const wordEl = document.getElementById("word");
+  const qEl = document.getElementById("question");
+  const box = document.getElementById("options");
+  box.innerHTML = "";
+
+  if (tab === "gr-ru") {
+    wordEl.textContent = current.word;
+    wordEl.className = "word";
+    qEl.textContent = "Как переводится этот глагол?";
+
+    const correct = {key:current.tr, label:current.tr};
+    const others = words.filter(w => w.tr !== current.tr);
+    const wrong = shuffle(others).slice(0, 3).map(w => ({key:w.tr, label:w.tr}));
+    const shown = shuffle([correct, ...wrong]);
+
+    shown.forEach(o => {
+      const b = document.createElement("button");
+      b.className = "opt";
+      b.textContent = o.label;
+      b.dataset.key = o.key;
+      b.onclick = () => check(o.key, b, correct.key);
+      box.appendChild(b);
+    });
+  } else {
+    wordEl.textContent = current.tr;
+    wordEl.className = "word rus-word";
+    qEl.textContent = "Как это по-гречески?";
+
+    const correct = {key:current.word, label:current.word};
+    const others = words.filter(w => w.word !== current.word);
+    const wrong = shuffle(others).slice(0, 3).map(w => ({key:w.word, label:w.word}));
+    const shown = shuffle([correct, ...wrong]);
+
+    shown.forEach(o => {
+      const b = document.createElement("button");
+      b.className = "opt greek";
+      b.textContent = o.label;
+      b.dataset.key = o.key;
+      b.onclick = () => check(o.key, b, correct.key);
+      box.appendChild(b);
+    });
+  }
+
+  document.getElementById("progress").textContent =
+    `Вопрос ${total + 1} • Осталось в колоде: ${deck.length}`;
+}
+
+function check(choiceKey, btn, correctKey) {
+  if (answered) return;
+  answered = true; total++;
+
+  const isRight = choiceKey === correctKey;
+  const correctBtn = [...document.querySelectorAll("#options button")]
+    .find(b => b.dataset.key === correctKey);
+
+  document.querySelectorAll("#options button").forEach(b => {
+    b.disabled = true;
+    if (b === correctBtn) b.classList.add("correct");
+  });
+
+  const fb = document.getElementById("feedback");
+  if (isRight) {
+    score++;
+    fb.textContent = "✅ Верно!";
+    fb.className = "feedback ok";
+  } else {
+    btn.classList.add("wrong");
+    fb.textContent = `❌ Неверно. Правильно: ${correctBtn.textContent}`;
+    fb.className = "feedback no";
+  }
+
+  const info = document.getElementById("info");
+  info.innerHTML = `
+    <div class="row"><span class="lbl">Слово:</span> ${current.word} — «${current.tr}»</div>
+    <div class="row"><span class="lbl">Часть речи:</span> глагол</div>
+    <div class="row"><span class="lbl">Спряжение:</span> ${conjRus[current.conj]}</div>
+    <div class="row"><span class="lbl">Лицо и число:</span> ${personRus[current.person]}</div>
+    <div class="row"><span class="lbl">Правило:</span> ${buildRule(current)}</div>
+  `;
+  info.classList.add("show");
+
+  document.getElementById("nextBtn").style.display = "inline-block";
+  document.getElementById("score").textContent = `Счёт: ${score} / ${total}`;
+}
+
+buildDeck();
+nextCard();
+</script>
+</body>
+</html>

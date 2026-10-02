@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Греческий — Уровень 1 (Существительные)</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #134e4a, #16a34a, #86efac);
+    min-height: 100vh;
+    display: flex; justify-content: center; align-items: flex-start;
+    padding: 10px;
+  }
+  .card {
+    background: #fff; border-radius: 16px; padding: 20px;
+    max-width: 640px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    text-align: center;
+  }
+  h1 { margin: 0 0 4px; color: #15803d; font-size: 20px; }
+  .subtitle {
+    color: #16a34a; font-size: 11px; margin-bottom: 10px;
+    letter-spacing: .5px; font-weight: 700;
+  }
+  .tab-switch { display: flex; gap: 6px; justify-content: center; margin-bottom: 14px; flex-wrap: wrap; }
+  .tab-switch button {
+    padding: 10px 14px; font-size: 13px; border-radius: 20px;
+    border: 2px solid #16a34a; background: #fff; color: #15803d;
+    cursor: pointer; font-weight: 700; transition: .2s; font-family: inherit;
+  }
+  .tab-switch button.active { background: #16a34a; color: #fff; }
+  .progress { color: #888; font-size: 12px; margin-bottom: 10px; }
+  .word {
+    font-size: 38px; font-weight: bold; color: #15803d;
+    margin: 10px 0 5px; font-family: 'Times New Roman', serif;
+    word-break: break-word; line-height: 1.15;
+  }
+  .word.rus-word {
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: #166534; font-size: 32px;
+  }
+  .question { font-size: 15px; margin-bottom: 14px; color: #333; font-weight: 600; }
+  .options { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  button.opt {
+    padding: 15px 14px; font-size: 16px; border: 2px solid #16a34a;
+    background: #fff; color: #15803d; border-radius: 10px;
+    cursor: pointer; transition: all .15s; font-weight: 600;
+    font-family: inherit; text-align: center; line-height: 1.3; min-height: 52px;
+  }
+  button.opt.greek { font-family: 'Times New Roman', serif; font-size: 20px; color: #15803d; }
+  button.opt:active:not(:disabled) { background: #16a34a; color: #fff; }
+  button.opt:disabled { cursor: default; opacity: .75; }
+  button.opt.correct { background: #22c55e !important; color: #fff !important; border-color: #22c55e; }
+  button.opt.wrong { background: #ef4444 !important; color: #fff !important; border-color: #ef4444; }
+  .feedback { margin-top: 14px; font-size: 16px; font-weight: 700; min-height: 22px; }
+  .feedback.ok { color: #22c55e; }
+  .feedback.no { color: #ef4444; }
+  .info {
+    display: none; margin-top: 12px; text-align: left;
+    background: #f0fdf4; border-left: 4px solid #16a34a;
+    border-radius: 8px; padding: 12px 14px; font-size: 14px;
+    color: #333; line-height: 1.55;
+  }
+  .info.show { display: block; animation: fade .25s ease; }
+  @keyframes fade { from {opacity:0; transform: translateY(-4px);} to {opacity:1;} }
+  .info .row { margin: 4px 0; }
+  .info .lbl { display: inline-block; min-width: 120px; font-weight: 700; color: #15803d; }
+  .next {
+    margin-top: 14px; background: #86efac; color: #14532d;
+    padding: 16px 24px; display: none;
+    font-weight: 700; border-radius: 12px; cursor: pointer; border: none;
+    font-family: inherit; font-size: 16px; width: 100%; min-height: 52px;
+    box-shadow: 0 3px 8px rgba(0,0,0,.15);
+  }
+  .next:active { background: #4ade80 !important; }
+  .score { margin-top: 12px; font-size: 12.5px; color: #666; }
+  @media (max-width: 600px) {
+    body { padding: 6px; }
+    .card { padding: 14px; border-radius: 12px; }
+    h1 { font-size: 17px; }
+    .word { font-size: 30px; }
+    .word.rus-word { font-size: 26px; }
+    button.opt { padding: 13px 12px; font-size: 15px; }
+    button.opt.greek { font-size: 18px; }
+    .info .lbl { min-width: 100px; }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>🏛️ Уровень 1 — Существительные</h1>
+  <div class="subtitle">🟢 НОВЫЙ ЗАВЕТ • 200 СЛОВ</div>
+
+  <div class="tab-switch">
+    <button id="tabGrRu" class="active" onclick="setTab('gr-ru')">🇬🇷 → 🇷🇺</button>
+    <button id="tabRuGr" onclick="setTab('ru-gr')">🇷🇺 → 🇬🇷</button>
+  </div>
+
+  <div class="progress" id="progress"></div>
+  <div class="word" id="word">—</div>
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback"></div>
+  <div class="info" id="info"></div>
+  <button class="next" id="nextBtn" onclick="nextCard()">Дальше →</button>
+  <div class="score" id="score"></div>
+</div>
+
+<script>
+/* =========================================================
+   СЛОВАРЬ — Уровень 1: 200 существительных Нового Завета
+   ========================================================= */
+const words = [
+  /* ========== 1-е склонение, женский род ========== */
+  {word:"ἡ ἀγάπη", tr:"любовь", type:"noun", decl:"1", gender:"ж", ending:"-η"},
+  {word:"ἡ ἀλήθεια", tr:"истина", type:"noun", decl:"1", gender:"ж", ending:"-εια"},
+  {word:"ἡ βασιλεία", tr:"царство", type:"noun", decl:"1", gender:"ж", ending:"-εια"},
+  {word:"ἡ καρδία", tr:"сердце", type:"noun", decl:"1", gender:"ж", ending:"-ία"},
+  {word:"ἡ σοφία", tr:"мудрость", type:"noun", decl:"1", gender:"ж", ending:"-ία"},
+  {word:"ἡ ἡμέρα", tr:"день", type:"noun", decl:"1", gender:"ж", ending:"-α"},
+  {word:"ἡ ἁμαρτία", tr:"грех", type:"noun", decl:"1", gender:"ж", ending:"-ία"},
+  {word:"ἡ ἐκκλησία", tr:"церковь", type:"noun", decl:"1", gender:"ж", ending:"-ία"},
+  {word:"ἡ δόξα", tr:"слава", type:"noun", decl:"1", gender:"ж", ending:"-α"},
+  {word:"ἡ εἰρήνη", tr:"мир", type:"noun", decl:"1", gender:"ж", ending:"-η"},
+  {word:"ἡ ζωή", tr:"жизнь", type:"noun", decl:"1", gender:"ж", ending:"-ή"},
+  {word:"ἡ γραφή", tr:"Писание", type:"noun", decl:"1", gender:"ж", ending:"-ή"},
+  {word:"ἡ φωνή", tr:"голос", type:"noun", decl:"1", gender:"ж", ending:"-ή"},
+  {word:"ἡ ἀρχή", tr:"начало", type:"noun", decl:"1", gender:"ж", ending:"-ή"},
+  {word:"ἡ θύρα", tr:"дверь", type:"noun", decl:"1", gender:"ж", ending:"-α"},
+  {word:"ἡ γλῶσσα", tr:"язык", type:"noun", decl:"1", gender:"ж", ending:"-α"},
+  {word:"ἡ οἰκία", tr:"дом", type:"noun", decl:"1", gender:"ж", ending:"-ία"},
+  {word:"ἡ χαρά", tr:"радость", type:"noun", decl:"1", gender:"ж", ending:"-ά"},
+  {word:"ἡ ὥρα", tr:"час, время", type:"noun", decl:"1", gender:"ж", ending:"-α"},
+  {word:"ἡ ἀδελφή", tr:"сестра", type:"noun", decl:"1", gender:"ж", ending:"-ή"},
+  {word:"ἡ γῆ", tr:"земля", type:"noun", decl:"1", gender:"ж", ending:"-ῆ"},
+  {word:"ἡ σκηνή", tr:"палатка, скиния", type:"noun", decl:"1", gender:"ж", ending:"-ή"},
+  {word:"ἡ ἀγορά", tr:"площадь, рынок", type:"noun", decl:"1", gender:"ж", ending:"-ά"},
+  {word:"ἡ μάχαιρα", tr:"меч", type:"noun", decl:"1", gender:"ж", ending:"-α"},
+  {word:"ἡ τράπεζα", tr:"стол, трапеза", type:"noun", decl:"1", gender:"ж", ending:"-α"},
+  {word:"ἡ θάλασσα", tr:"море", type:"noun", decl:"1", gender:"ж", ending:"-α"},
+  {word:"ἡ βασίλισσα", tr:"царица", type:"noun", decl:"1", gender:"ж", ending:"-α"},
+  {word:"ἡ διάνοια", tr:"разум, мысль", type:"noun", decl:"1", gender:"ж", ending:"-ια"},
+  {word:"ἡ σωτηρία", tr:"спасение", type:"noun", decl:"1", gender:"ж", ending:"-ία"},
+  {word:"ἡ ἐπαγγελία", tr:"обещание", type:"noun", decl:"1", gender:"ж", ending:"-ία"},
+  {word:"ἡ παρουσία", tr:"пришествие", type:"noun", decl:"1", gender:"ж", ending:"-ία"},
+  {word:"ἡ κοινωνία", tr:"общение", type:"noun", decl:"1", gender:"ж", ending:"-ία"},
+  {word:"ἡ δικαιοσύνη", tr:"праведность", type:"noun", decl:"1", gender:"ж", ending:"-η"},
+  {word:"ἡ ἁγιωσύνη", tr:"святость", type:"noun", decl:"1", gender:"ж", ending:"-η"},
+  {word:"ἡ οἰκοδομή", tr:"назидание", type:"noun", decl:"1", gender:"ж", ending:"-ή"},
+  {word:"ἡ περιτομή", tr:"обрезание", type:"noun", decl:"1", gender:"ж", ending:"-ή"},
+  {word:"ἡ ἐντολή", tr:"заповедь", type:"noun", decl:"1", gender:"ж", ending:"-ή"},
+  {word:"ἡ ἀπώλεια", tr:"погибель", type:"noun", decl:"1", gender:"ж", ending:"-εια"},
+  {word:"ἡ ἐξουσία", tr:"власть", type:"noun", decl:"1", gender:"ж", ending:"-ία"},
+  {word:"ἡ ἀσθένεια", tr:"немощь, болезнь", type:"noun", decl:"1", gender:"ж", ending:"-εια"},
+  {word:"ἡ εὐσέβεια", tr:"благочестие", type:"noun", decl:"1", gender:"ж", ending:"-εια"},
+  {word:"ἡ προσευχή", tr:"молитва", type:"noun", decl:"1", gender:"ж", ending:"-ή"},
+  {word:"ἡ ἀνάγκη", tr:"нужда, необходимость", type:"noun", decl:"1", gender:"ж", ending:"-η"},
+  {word:"ἡ μαρτυρία", tr:"свидетельство", type:"noun", decl:"1", gender:"ж", ending:"-ία"},
+  {word:"ἡ σάρξ (3)", tr:"плоть", type:"noun", decl:"3", gender:"ж", ending:"-ξ"},
+  {word:"ἡ τιμή", tr:"честь, цена", type:"noun", decl:"1", gender:"ж", ending:"-ή"},
+  {word:"ἡ νίκη", tr:"победа", type:"noun", decl:"1", gender:"ж", ending:"-η"},
+  {word:"ἡ μάχη", tr:"битва", type:"noun", decl:"1", gender:"ж", ending:"-η"},
+  {word:"ἡ γνώμη", tr:"мнение", type:"noun", decl:"1", gender:"ж", ending:"-η"},
+  {word:"ἡ κεφαλή", tr:"голова", type:"noun", decl:"1", gender:"ж", ending:"-ή"},
+  {word:"ἡ σελήνη", tr:"луна", type:"noun", decl:"1", gender:"ж", ending:"-η"},
+  {word:"ἡ γέφυρα", tr:"мост", type:"noun", decl:"1", gender:"ж", ending:"-α"},
+  {word:"ἡ ἡγεμονία", tr:"владычество", type:"noun", decl:"1", gender:"ж", ending:"-ία"},
+  {word:"ἡ θλίψις (3)", tr:"скорбь", type:"noun", decl:"3", gender:"ж", ending:"-ις"},
+  {word:"ἡ ἐλπίς (3)", tr:"надежда", type:"noun", decl:"3", gender:"ж", ending:"-ίς"},
+  {word:"ἡ πίστις (3)", tr:"вера", type:"noun", decl:"3", gender:"ж", ending:"-ις"},
+  {word:"ἡ πόλις (3)", tr:"город", type:"noun", decl:"3", gender:"ж", ending:"-ις"},
+  {word:"ἡ χάρις (3)", tr:"благодать", type:"noun", decl:"3", gender:"ж", ending:"-ις"},
+  {word:"ἡ δύναμις (3)", tr:"сила", type:"noun", decl:"3", gender:"ж", ending:"-ις"},
+  {word:"ἡ ἀνάστασις (3)", tr:"воскресение", type:"noun", decl:"3", gender:"ж", ending:"-ις"},
+  {word:"ἡ γνῶσις (3)", tr:"знание", type:"noun", decl:"3", gender:"ж", ending:"-ις"},
+  {word:"ἡ κρίσις (3)", tr:"суд", type:"noun", decl:"3", gender:"ж", ending:"-ις"},
+  {word:"ἡ φύσις (3)", tr:"природа", type:"noun", decl:"3", gender:"ж", ending:"-ις"},
+  {word:"ἡ μήτηρ (3)", tr:"мать", type:"noun", decl:"3", gender:"ж", ending:"-ήρ"},
+  {word:"ἡ θυγάτηρ (3)", tr:"дочь", type:"noun", decl:"3", gender:"ж", ending:"-ήρ"},
+  {word:"ἡ γυνή (3)", tr:"жена, женщина", type:"noun", decl:"3", gender:"ж", ending:"-ή"},
+  {word:"ἡ νύξ (3)", tr:"ночь", type:"noun", decl:"3", gender:"ж", ending:"-ξ"},
+
+  /* ========== 1-е склонение, мужской род ========== */
+  {word:"ὁ μαθητής", tr:"ученик", type:"noun", decl:"1", gender:"м", ending:"-ής"},
+  {word:"ὁ προφήτης", tr:"пророк", type:"noun", decl:"1", gender:"м", ending:"-ης"},
+  {word:"ὁ τελώνης", tr:"мытарь", type:"noun", decl:"1", gender:"м", ending:"-ης"},
+  {word:"ὁ κριτής", tr:"судья", type:"noun", decl:"1", gender:"м", ending:"-ής"},
+  {word:"ὁ βαπτιστής", tr:"Креститель", type:"noun", decl:"1", gender:"м", ending:"-ής"},
+  {word:"ὁ νεανίας", tr:"юноша", type:"noun", decl:"1", gender:"м", ending:"-ας"},
+  {word:"ὁ ποιητής", tr:"творец, поэт", type:"noun", decl:"1", gender:"м", ending:"-ής"},
+  {word:"ὁ κλέπτης", tr:"вор", type:"noun", decl:"1", gender:"м", ending:"-ης"},
+  {word:"ὁ στρατιώτης", tr:"воин", type:"noun", decl:"1", gender:"м", ending:"-ης"},
+  {word:"ὁ ὑποκριτής", tr:"лицемер", type:"noun", decl:"1", gender:"м", ending:"-ής"},
+  {word:"ὁ λῃστής", tr:"разбойник", type:"noun", decl:"1", gender:"м", ending:"-ής"},
+  {word:"ὁ δεσπότης", tr:"господин", type:"noun", decl:"1", gender:"м", ending:"-ης"},
+  {word:"ὁ ναύτης", tr:"моряк", type:"noun", decl:"1", gender:"м", ending:"-ης"},
+  {word:"ὁ οἰκοδεσπότης", tr:"домовладыка", type:"noun", decl:"1", gender:"м", ending:"-ης"},
+
+  /* ========== 2-е склонение, мужской род ========== */
+  {word:"ὁ λόγος", tr:"слово", type:"noun", decl:"2", gender:"м", ending:"-ος"},
+  {word:"ὁ θεός", tr:"Бог", type:"noun", decl:"2", gender:"м", ending:"-ός"},
+  {word:"ὁ κύριος", tr:"Господь", type:"noun", decl:"2", gender:"м", ending:"-ος"},
+  {word:"ὁ ἄνθρωπος", tr:"человек", type:"noun", decl:"2", gender:"м", ending:"-ος"},
+  {word:"ὁ ἀδελφός", tr:"брат", type:"noun", decl:"2", gender:"м", ending:"-ός"},
+  {word:"ὁ ἀγρός", tr:"поле", type:"noun", decl:"2", gender:"м", ending:"-ός"},
+  {word:"ὁ ἄνεμος", tr:"ветер", type:"noun", decl:"2", gender:"м", ending:"-ος"},
+  {word:"ὁ θάνατος", tr:"смерть", type:"noun", decl:"2", gender:"м", ending:"-ος"},
+  {word:"ὁ οἶκος", tr:"дом", type:"noun", decl:"2", gender:"м", ending:"-ος"},
+  {word:"ὁ δοῦλος", tr:"раб, слуга", type:"noun", decl:"2", gender:"м", ending:"-ος"},
+  {word:"ὁ καιρός", tr:"время, срок", type:"noun", decl:"2", gender:"м", ending:"-ός"},
+  {word:"ὁ λαός", tr:"народ", type:"noun", decl:"2", gender:"м", ending:"-ός"},
+  {word:"ὁ οὐρανός", tr:"небо", type:"noun", decl:"2", gender:"м", ending:"-ός"},
+  {word:"ὁ κόσμος", tr:"мир", type:"noun", decl:"2", gender:"м", ending:"-ος"},
+  {word:"ὁ νόμος", tr:"закон", type:"noun", decl:"2", gender:"м", ending:"-ος"},
+  {word:"ὁ τόπος", tr:"место", type:"noun", decl:"2", gender:"м", ending:"-ος"},
+  {word:"ὁ υἱός", tr:"сын", type:"noun", decl:"2", gender:"м", ending:"-ός"},
+  {word:"ὁ ἄρτος", tr:"хлеб", type:"noun", decl:"2", gender:"м", ending:"-ος"},
+  {word:"ὁ οἶνος", tr:"вино", type:"noun", decl:"2", gender:"м", ending:"-ος"},
+  {word:"ὁ ἀριθμός", tr:"число", type:"noun", decl:"2", gender:"м", ending:"-ός"},
+  {word:"ὁ ἄγγελος", tr:"ангел, вестник", type:"noun", decl:"2", gender:"м", ending:"-ος"},
+  {word:"ὁ ἀπόστολος", tr:"апостол", type:"noun", decl:"2", gender:"м", ending:"-ος"},
+  {word:"ὁ ἐχθρός", tr:"враг", type:"noun", decl:"2", gender:"м", ending:"-ός"},
+  {word:"ὁ φίλος", tr:"друг", type:"noun", decl:"2", gender:"м", ending:"-ος"},
+  {word:"ὁ Ἰουδαῖος", tr:"иудей", type:"noun", decl:"2", gender:"м", ending:"-ος"},
+  {word:"ὁ γεωργός", tr:"земледелец", type:"noun", decl:"2", gender:"м", ending:"-ός"},
+  {word:"ὁ πονηρός", tr:"лукавый", type:"noun", decl:"2", gender:"м", ending:"-ός"},
+  {word:"ὁ ἁμαρτωλός", tr:"грешник", type:"noun", decl:"2", gender:"м", ending:"-ός"},
+  {word:"ὁ ἀδελφός", tr:"брат", type:"noun", decl:"2", gender:"м", ending:"-ός"},
+  {word:"ὁ δοῦλος", tr:"раб", type:"noun", decl:"2", gender:"м", ending:"-ος"},
+
+  /* ========== 2-е склонение, средний род ========== */
+  {word:"τὸ ἔργον", tr:"дело", type:"noun", decl:"2", gender:"с", ending:"-ον"},
+  {word:"τὸ τέκνον", tr:"ребёнок", type:"noun", decl:"2", gender:"с", ending:"-ον"},
+  {word:"τὸ βιβλίον", tr:"книга", type:"noun", decl:"2", gender:"с", ending:"-ον"},
+  {word:"τὸ δῶρον", tr:"дар", type:"noun", decl:"2", gender:"с", ending:"-ον"},
+  {word:"τὸ ἱερόν", tr:"храм", type:"noun", decl:"2", gender:"с", ending:"-όν"},
+  {word:"τὸ εὐαγγέλιον", tr:"Евангелие", type:"noun", decl:"2", gender:"с", ending:"-ον"},
+  {word:"τὸ πλοῖον", tr:"корабль", type:"noun", decl:"2", gender:"с", ending:"-ον"},
+  {word:"τὸ σημεῖον", tr:"знамение", type:"noun", decl:"2", gender:"с", ending:"-ον"},
+  {word:"τὸ ὄρος", tr:"гора", type:"noun", decl:"2", gender:"с", ending:"-ος"},
+  {word:"τὸ ἔθνος", tr:"народ, язычники", type:"noun", decl:"2", gender:"с", ending:"-ος"},
+  {word:"τὸ πρόσωπον", tr:"лицо", type:"noun", decl:"2", gender:"с", ending:"-ον"},
+  {word:"τὸ θηρίον", tr:"зверь", type:"noun", decl:"2", gender:"с", ending:"-ον"},
+  {word:"τὸ μνημεῖον", tr:"гробница", type:"noun", decl:"2", gender:"с", ending:"-ον"},
+  {word:"τὸ παιδίον", tr:"малое дитя", type:"noun", decl:"2", gender:"с", ending:"-ον"},
+  {word:"τὸ ἱμάτιον", tr:"одежда", type:"noun", decl:"2", gender:"с", ending:"-ον"},
+  {word:"τὸ δένδρον", tr:"дерево", type:"noun", decl:"2", gender:"с", ending:"-ον"},
+  {word:"τὸ ζῷον", tr:"животное", type:"noun", decl:"2", gender:"с", ending:"-ον"},
+  {word:"τὸ σκεῦος", tr:"сосуд", type:"noun", decl:"2", gender:"с", ending:"-ος"},
+  {word:"τὸ χωρίον", tr:"место, поместье", type:"noun", decl:"2", gender:"с", ending:"-ον"},
+  {word:"τὸ ἀργύριον", tr:"серебро, деньги", type:"noun", decl:"2", gender:"с", ending:"-ον"},
+
+  /* ========== 3-е склонение, мужской род ========== */
+  {word:"ὁ πατήρ", tr:"отец", type:"noun", decl:"3", gender:"м", ending:"-ήρ"},
+  {word:"ὁ ἀνήρ", tr:"муж, мужчина", type:"noun", decl:"3", gender:"м", ending:"-ήρ"},
+  {word:"ὁ σωτήρ", tr:"Спаситель", type:"noun", decl:"3", gender:"м", ending:"-ήρ"},
+  {word:"ὁ βασιλεύς", tr:"царь", type:"noun", decl:"3", gender:"м", ending:"-εύς"},
+  {word:"ὁ ἱερεύς", tr:"священник", type:"noun", decl:"3", gender:"м", ending:"-εύς"},
+  {word:"ὁ ἀρχιερεύς", tr:"первосвященник", type:"noun", decl:"3", gender:"м", ending:"-εύς"},
+  {word:"ὁ ἄρχων", tr:"правитель", type:"noun", decl:"3", gender:"м", ending:"-ων"},
+  {word:"ὁ αἰών", tr:"век, вечность", type:"noun", decl:"3", gender:"м", ending:"-ών"},
+  {word:"ὁ ἀστήρ", tr:"звезда", type:"noun", decl:"3", gender:"м", ending:"-ήρ"},
+  {word:"ὁ Ἕλλην", tr:"эллин, язычник", type:"noun", decl:"3", gender:"м", ending:"-ην"},
+  {word:"ὁ ποιμήν", tr:"пастырь", type:"noun", decl:"3", gender:"м", ending:"-ήν"},
+  {word:"ὁ ἀλέκτωρ", tr:"петух", type:"noun", decl:"3", gender:"м", ending:"-ωρ"},
+  {word:"ὁ παῖς", tr:"ребёнок, слуга", type:"noun", decl:"3", gender:"м", ending:"-αῖς"},
+  {word:"ὁ σπείρων", tr:"сеятель", type:"noun", decl:"3", gender:"м", ending:"-ων"},
+  {word:"ὁ χειμών", tr:"зима, буря", type:"noun", decl:"3", gender:"м", ending:"-ών"},
+  {word:"ὁ ἡγεμών", tr:"вождь", type:"noun", decl:"3", gender:"м", ending:"-ών"},
+  {word:"ὁ γείτων", tr:"сосед", type:"noun", decl:"3", gender:"м", ending:"-ων"},
+  {word:"ὁ λέων", tr:"лев", type:"noun", decl:"3", gender:"м", ending:"-ων"},
+  {word:"ὁ γέρων", tr:"старик", type:"noun", decl:"3", gender:"м", ending:"-ων"},
+  {word:"ὁ ῥήτωρ", tr:"оратор", type:"noun", decl:"3", gender:"м", ending:"-ωρ"},
+
+  /* ========== 3-е склонение, средний род ========== */
+  {word:"τὸ σῶμα", tr:"тело", type:"noun", decl:"3", gender:"с", ending:"-μα"},
+  {word:"τὸ ὄνομα", tr:"имя", type:"noun", decl:"3", gender:"с", ending:"-μα"},
+  {word:"τὸ αἷμα", tr:"кровь", type:"noun", decl:"3", gender:"с", ending:"-μα"},
+  {word:"τὸ πνεῦμα", tr:"дух, дыхание", type:"noun", decl:"3", gender:"с", ending:"-μα"},
+  {word:"τὸ θέλημα", tr:"воля", type:"noun", decl:"3", gender:"с", ending:"-μα"},
+  {word:"τὸ ῥῆμα", tr:"слово, изречение", type:"noun", decl:"3", gender:"с", ending:"-μα"},
+  {word:"τὸ φῶς", tr:"свет", type:"noun", decl:"3", gender:"с", ending:"-ῶς"},
+  {word:"τὸ πῦρ", tr:"огонь", type:"noun", decl:"3", gender:"с", ending:"-ῦρ"},
+  {word:"τὸ ὕδωρ", tr:"вода", type:"noun", decl:"3", gender:"с", ending:"-ωρ"},
+  {word:"τὸ σκότος", tr:"тьма", type:"noun", decl:"3", gender:"с", ending:"-ος"},
+  {word:"τὸ ἔλεος", tr:"милость", type:"noun", decl:"3", gender:"с", ending:"-ος"},
+  {word:"τὸ γένος", tr:"род", type:"noun", decl:"3", gender:"с", ending:"-ος"},
+  {word:"τὸ μέρος", tr:"часть", type:"noun", decl:"3", gender:"с", ending:"-ος"},
+  {word:"τὸ τέλος", tr:"конец", type:"noun", decl:"3", gender:"с", ending:"-ος"},
+  {word:"τὸ σπέρμα", tr:"семя", type:"noun", decl:"3", gender:"с", ending:"-μα"},
+  {word:"τὸ στόμα", tr:"рот, уста", type:"noun", decl:"3", gender:"с", ending:"-μα"},
+  {word:"τὸ κρίμα", tr:"суд, осуждение", type:"noun", decl:"3", gender:"с", ending:"-μα"},
+  {word:"τὸ βάπτισμα", tr:"крещение", type:"noun", decl:"3", gender:"с", ending:"-μα"},
+  {word:"τὸ ἅλας", tr:"соль", type:"noun", decl:"3", gender:"с", ending:"-ας"},
+  {word:"τὸ ὄμμα", tr:"глаз, око", type:"noun", decl:"3", gender:"с", ending:"-μα"}
+];
+
+/* =========================================================
+   СПРАВОЧНИКИ
+   ========================================================= */
+const declRus = {"1":"1-е склонение","2":"2-е склонение","3":"3-е склонение"};
+const genderRus = {"м":"мужской род","ж":"женский род","с":"средний род"};
+
+function buildRule(w) {
+  const decl = declRus[w.decl];
+  const gender = genderRus[w.gender];
+  let stem = "";
+  if (w.decl === "1") stem = "основа на -α/η";
+  if (w.decl === "2") stem = "основа на -ο";
+  if (w.decl === "3") stem = "согласная основа";
+  const art = w.word.split(" ")[0];
+  return `${decl}, ${gender}, ${stem}. Артикль «${art}» → ${gender}. Окончание «${w.ending}» → ${decl}.`;
+}
+
+/* =========================================================
+   СОСТОЯНИЕ
+   ========================================================= */
+let tab = "gr-ru";
+let deck = [];
+let current = null;
+let answered = false;
+let score = 0, total = 0;
+
+function shuffle(a) {
+  const arr = a.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function buildDeck() {
+  deck = shuffle(words.slice());
+}
+
+function setTab(t) {
+  tab = t;
+  document.getElementById("tabGrRu").classList.toggle("active", t === "gr-ru");
+  document.getElementById("tabRuGr").classList.toggle("active", t === "ru-gr");
+  score = 0; total = 0;
+  buildDeck();
+  nextCard();
+}
+
+function nextCard() {
+  if (deck.length === 0) buildDeck();
+  current = deck.pop();
+  answered = false;
+
+  const fb = document.getElementById("feedback");
+  fb.textContent = ""; fb.className = "feedback";
+  const info = document.getElementById("info");
+  info.className = "info"; info.innerHTML = "";
+  document.getElementById("nextBtn").style.display = "none";
+
+  const wordEl = document.getElementById("word");
+  const qEl = document.getElementById("question");
+  const box = document.getElementById("options");
+  box.innerHTML = "";
+
+  if (tab === "gr-ru") {
+    wordEl.textContent = current.word;
+    wordEl.className = "word";
+    qEl.textContent = "Как переводится это слово?";
+
+    const correct = {key:current.tr, label:current.tr};
+    const others = words.filter(w => w.tr !== current.tr);
+    const wrong = shuffle(others).slice(0, 3).map(w => ({key:w.tr, label:w.tr}));
+    const shown = shuffle([correct, ...wrong]);
+
+    shown.forEach(o => {
+      const b = document.createElement("button");
+      b.className = "opt";
+      b.textContent = o.label;
+      b.dataset.key = o.key;
+      b.onclick = () => check(o.key, b, correct.key);
+      box.appendChild(b);
+    });
+  } else {
+    wordEl.textContent = current.tr;
+    wordEl.className = "word rus-word";
+    qEl.textContent = "Как это слово по-гречески?";
+
+    const correct = {key:current.word, label:current.word};
+    const others = words.filter(w => w.word !== current.word);
+    const wrong = shuffle(others).slice(0, 3).map(w => ({key:w.word, label:w.word}));
+    const shown = shuffle([correct, ...wrong]);
+
+    shown.forEach(o => {
+      const b = document.createElement("button");
+      b.className = "opt greek";
+      b.textContent = o.label;
+      b.dataset.key = o.key;
+      b.onclick = () => check(o.key, b, correct.key);
+      box.appendChild(b);
+    });
+  }
+
+  document.getElementById("progress").textContent =
+    `Вопрос ${total + 1} • Осталось в колоде: ${deck.length}`;
+}
+
+function check(choiceKey, btn, correctKey) {
+  if (answered) return;
+  answered = true; total++;
+
+  const isRight = choiceKey === correctKey;
+  const correctBtn = [...document.querySelectorAll("#options button")]
+    .find(b => b.dataset.key === correctKey);
+
+  document.querySelectorAll("#options button").forEach(b => {
+    b.disabled = true;
+    if (b === correctBtn) b.classList.add("correct");
+  });
+
+  const fb = document.getElementById("feedback");
+  if (isRight) {
+    score++;
+    fb.textContent = "✅ Верно!";
+    fb.className = "feedback ok";
+  } else {
+    btn.classList.add("wrong");
+    fb.textContent = `❌ Неверно. Правильно: ${correctBtn.textContent}`;
+    fb.className = "feedback no";
+  }
+
+  const info = document.getElementById("info");
+  info.innerHTML = `
+    <div class="row"><span class="lbl">Слово:</span> ${current.word} — «${current.tr}»</div>
+    <div class="row"><span class="lbl">Часть речи:</span> существительное</div>
+    <div class="row"><span class="lbl">Род:</span> ${genderRus[current.gender]}</div>
+    <div class="row"><span class="lbl">Склонение:</span> ${declRus[current.decl]}</div>
+    <div class="row"><span class="lbl">Окончание:</span> ${current.ending}</div>
+    <div class="row"><span class="lbl">Правило:</span> ${buildRule(current)}</div>
+  `;
+  info.classList.add("show");
+
+  document.getElementById("nextBtn").style.display = "inline-block";
+  document.getElementById("score").textContent = `Счёт: ${score} / ${total}`;
+}
+
+buildDeck();
+nextCard();
+</script>
+</body>
+</html>

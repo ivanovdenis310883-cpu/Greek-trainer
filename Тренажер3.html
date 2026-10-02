@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Греческий — Уровень 3 (Прилагательные и служебные слова)</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #7f1d1d, #dc2626, #fca5a5);
+    min-height: 100vh;
+    display: flex; justify-content: center; align-items: flex-start;
+    padding: 10px;
+  }
+  .card {
+    background: #fff; border-radius: 16px; padding: 20px;
+    max-width: 640px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    text-align: center;
+  }
+  h1 { margin: 0 0 4px; color: #991b1b; font-size: 20px; }
+  .subtitle {
+    color: #dc2626; font-size: 11px; margin-bottom: 10px;
+    letter-spacing: .5px; font-weight: 700;
+  }
+  .tab-switch { display: flex; gap: 6px; justify-content: center; margin-bottom: 14px; flex-wrap: wrap; }
+  .tab-switch button {
+    padding: 10px 14px; font-size: 13px; border-radius: 20px;
+    border: 2px solid #dc2626; background: #fff; color: #991b1b;
+    cursor: pointer; font-weight: 700; transition: .2s; font-family: inherit;
+  }
+  .tab-switch button.active { background: #dc2626; color: #fff; }
+  .progress { color: #888; font-size: 12px; margin-bottom: 10px; }
+  .word {
+    font-size: 38px; font-weight: bold; color: #991b1b;
+    margin: 10px 0 5px; font-family: 'Times New Roman', serif;
+    word-break: break-word; line-height: 1.15;
+  }
+  .word.rus-word {
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: #7f1d1d; font-size: 32px;
+  }
+  .question { font-size: 15px; margin-bottom: 14px; color: #333; font-weight: 600; }
+  .options { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  button.opt {
+    padding: 15px 14px; font-size: 16px; border: 2px solid #dc2626;
+    background: #fff; color: #991b1b; border-radius: 10px;
+    cursor: pointer; transition: all .15s; font-weight: 600;
+    font-family: inherit; text-align: center; line-height: 1.3; min-height: 52px;
+  }
+  button.opt.greek { font-family: 'Times New Roman', serif; font-size: 20px; color: #991b1b; }
+  button.opt:active:not(:disabled) { background: #dc2626; color: #fff; }
+  button.opt:disabled { cursor: default; opacity: .75; }
+  button.opt.correct { background: #22c55e !important; color: #fff !important; border-color: #22c55e; }
+  button.opt.wrong { background: #ef4444 !important; color: #fff !important; border-color: #ef4444; }
+  .feedback { margin-top: 14px; font-size: 16px; font-weight: 700; min-height: 22px; }
+  .feedback.ok { color: #22c55e; }
+  .feedback.no { color: #ef4444; }
+  .info {
+    display: none; margin-top: 12px; text-align: left;
+    background: #fef2f2; border-left: 4px solid #dc2626;
+    border-radius: 8px; padding: 12px 14px; font-size: 14px;
+    color: #333; line-height: 1.55;
+  }
+  .info.show { display: block; animation: fade .25s ease; }
+  @keyframes fade { from {opacity:0; transform: translateY(-4px);} to {opacity:1;} }
+  .info .row { margin: 4px 0; }
+  .info .lbl { display: inline-block; min-width: 120px; font-weight: 700; color: #991b1b; }
+  .next {
+    margin-top: 14px; background: #fca5a5; color: #7f1d1d;
+    padding: 16px 24px; display: none;
+    font-weight: 700; border-radius: 12px; cursor: pointer; border: none;
+    font-family: inherit; font-size: 16px; width: 100%; min-height: 52px;
+    box-shadow: 0 3px 8px rgba(0,0,0,.15);
+  }
+  .next:active { background: #f87171 !important; }
+  .score { margin-top: 12px; font-size: 12.5px; color: #666; }
+  @media (max-width: 600px) {
+    body { padding: 6px; }
+    .card { padding: 14px; border-radius: 12px; }
+    h1 { font-size: 17px; }
+    .word { font-size: 30px; }
+    .word.rus-word { font-size: 26px; }
+    button.opt { padding: 13px 12px; font-size: 15px; }
+    button.opt.greek { font-size: 18px; }
+    .info .lbl { min-width: 100px; }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>🏛️ Уровень 3 — Прилагательные и служебные слова</h1>
+  <div class="subtitle">🔴 НОВЫЙ ЗАВЕТ • 200 СЛОВ</div>
+
+  <div class="tab-switch">
+    <button id="tabGrRu" class="active" onclick="setTab('gr-ru')">🇬🇷 → 🇷🇺</button>
+    <button id="tabRuGr" onclick="setTab('ru-gr')">🇷🇺 → 🇬🇷</button>
+  </div>
+
+  <div class="progress" id="progress"></div>
+  <div class="word" id="word">—</div>
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+  <div class="feedback" id="feedback"></div>
+  <div class="info" id="info"></div>
+  <button class="next" id="nextBtn" onclick="nextCard()">Дальше →</button>
+  <div class="score" id="score"></div>
+</div>
+
+<script>
+/* =========================================================
+   СЛОВАРЬ — Уровень 3: 200 прилагательных, местоимений, служебных
+   ========================================================= */
+const words = [
+  /* ========== Прилагательные ========== */
+  {word:"ἀγαθός", tr:"добрый, хороший", type:"adj", decl:"2", gender:"м"},
+  {word:"ἀγαπητός", tr:"возлюбленный", type:"adj", decl:"2", gender:"м"},
+  {word:"ἅγιος", tr:"святой", type:"adj", decl:"2", gender:"м"},
+  {word:"ἀδύνατος", tr:"немощный, невозможный", type:"adj", decl:"2", gender:"м"},
+  {word:"αἰώνιος", tr:"вечный", type:"adj", decl:"2", gender:"м"},
+  {word:"ἀκάθαρτος", tr:"нечистый", type:"adj", decl:"2", gender:"м"},
+  {word:"ἀληθής", tr:"истинный", type:"adj", decl:"3", gender:"м"},
+  {word:"ἀληθινός", tr:"истинный, подлинный", type:"adj", decl:"2", gender:"м"},
+  {word:"ἁμαρτωλός", tr:"грешный", type:"adj", decl:"2", gender:"м"},
+  {word:"ἄξιος", tr:"достойный", type:"adj", decl:"2", gender:"м"},
+  {word:"ἀόρατος", tr:"невидимый", type:"adj", decl:"2", gender:"м"},
+  {word:"ἀπιστος", tr:"неверный", type:"adj", decl:"2", gender:"м"},
+  {word:"ἀπολλύων", tr:"губящий", type:"adj", decl:"3", gender:"м"},
+  {word:"ἀσθενής", tr:"немощный", type:"adj", decl:"3", gender:"м"},
+  {word:"δίκαιος", tr:"праведный", type:"adj", decl:"2", gender:"м"},
+  {word:"δυνατός", tr:"сильный, возможный", type:"adj", decl:"2", gender:"м"},
+  {word:"ἔσχατος", tr:"последний", type:"adj", decl:"2", gender:"м"},
+  {word:"ζῶν", tr:"живой, живущий", type:"adj", decl:"3", gender:"м"},
+  {word:"ἰσχυρός", tr:"сильный, крепкий", type:"adj", decl:"2", gender:"м"},
+  {word:"καθαρός", tr:"чистый", type:"adj", decl:"2", gender:"м"},
+  {word:"κακός", tr:"злой, плохой", type:"adj", decl:"2", gender:"м"},
+  {word:"καλός", tr:"хороший, прекрасный", type:"adj", decl:"2", gender:"м"},
+  {word:"λοιπός", tr:"остальной, прочий", type:"adj", decl:"2", gender:"м"},
+  {word:"μέγας", tr:"большой, великий", type:"adj", decl:"3", gender:"м"},
+  {word:"μικρός", tr:"малый", type:"adj", decl:"2", gender:"м"},
+  {word:"μόνος", tr:"единственный, один", type:"adj", decl:"2", gender:"м"},
+  {word:"νεκρός", tr:"мёртвый", type:"adj", decl:"2", gender:"м"},
+  {word:"νέος", tr:"новый, молодой", type:"adj", decl:"2", gender:"м"},
+  {word:"ὀλίγος", tr:"малый, немногочисленный", type:"adj", decl:"2", gender:"м"},
+  {word:"ὅλος", tr:"весь, целый", type:"adj", decl:"2", gender:"м"},
+  {word:"ὄντως", tr:"действительно (нареч.)", type:"adj", decl:"2", gender:"м"},
+  {word:"πιστός", tr:"верный", type:"adj", decl:"2", gender:"м"},
+  {word:"πολύς", tr:"многий, большой", type:"adj", decl:"3", gender:"м"},
+  {word:"πονηρός", tr:"лукавый, злой", type:"adj", decl:"2", gender:"м"},
+  {word:"πρῶτος", tr:"первый", type:"adj", decl:"2", gender:"м"},
+  {word:"σοφός", tr:"мудрый", type:"adj", decl:"2", gender:"м"},
+  {word:"τυφλός", tr:"слепой", type:"adj", decl:"2", gender:"м"},
+  {word:"ὑψηλός", tr:"высокий", type:"adj", decl:"2", gender:"м"},
+  {word:"φαῦλος", tr:"дурной, злой", type:"adj", decl:"2", gender:"м"},
+  {word:"χαλεπός", tr:"тяжкий, трудный", type:"adj", decl:"2", gender:"м"},
+
+  /* ========== Прилагательные — женский/средний род ========== */
+  {word:"ἀγαθή", tr:"добрая (ж.р.)", type:"adj", decl:"1", gender:"ж"},
+  {word:"ἁγία", tr:"святая (ж.р.)", type:"adj", decl:"1", gender:"ж"},
+  {word:"αἰωνία", tr:"вечная (ж.р.)", type:"adj", decl:"1", gender:"ж"},
+  {word:"ἀληθινή", tr:"истинная (ж.р.)", type:"adj", decl:"1", gender:"ж"},
+  {word:"δικαία", tr:"праведная (ж.р.)", type:"adj", decl:"1", gender:"ж"},
+  {word:"καλή", tr:"хорошая (ж.р.)", type:"adj", decl:"1", gender:"ж"},
+  {word:"μεγάλη", tr:"большая (ж.р.)", type:"adj", decl:"1", gender:"ж"},
+  {word:"μικρά", tr:"малая (ж.р.)", type:"adj", decl:"1", gender:"ж"},
+  {word:"νεκρά", tr:"мёртвая (ж.р.)", type:"adj", decl:"1", gender:"ж"},
+  {word:"πιστή", tr:"верная (ж.р.)", type:"adj", decl:"1", gender:"ж"},
+  {word:"πονηρά", tr:"лукавая (ж.р.)", type:"adj", decl:"1", gender:"ж"},
+  {word:"πρώτη", tr:"первая (ж.р.)", type:"adj", decl:"1", gender:"ж"},
+  {word:"σοφή", tr:"мудрая (ж.р.)", type:"adj", decl:"1", gender:"ж"},
+  {word:"ἀγαθόν", tr:"доброе (с.р.)", type:"adj", decl:"2", gender:"с"},
+  {word:"ἅγιον", tr:"святое (с.р.)", type:"adj", decl:"2", gender:"с"},
+  {word:"αἰώνιον", tr:"вечное (с.р.)", type:"adj", decl:"2", gender:"с"},
+  {word:"καλόν", tr:"хорошее (с.р.)", type:"adj", decl:"2", gender:"с"},
+  {word:"μέγα", tr:"большое (с.р.)", type:"adj", decl:"3", gender:"с"},
+  {word:"μικρόν", tr:"малое (с.р.)", type:"adj", decl:"2", gender:"с"},
+  {word:"πιστόν", tr:"верное (с.р.)", type:"adj", decl:"2", gender:"с"},
+
+  /* ========== Прилагательные — степени сравнения ========== */
+  {word:"μείζων", tr:"больший", type:"adj", decl:"3", gender:"м"},
+  {word:"κρείσσων", tr:"лучший", type:"adj", decl:"3", gender:"м"},
+  {word:"ἥσσων", tr:"меньший, худший", type:"adj", decl:"3", gender:"м"},
+  {word:"πλείων", tr:"больший (по числу)", type:"adj", decl:"3", gender:"м"},
+  {word:"ἐλάσσων", tr:"меньший", type:"adj", decl:"3", gender:"м"},
+
+  /* ========== Местоимения личные ========== */
+  {word:"ἐγώ", tr:"я", type:"pron", decl:"-", gender:"-"},
+  {word:"σύ", tr:"ты", type:"pron", decl:"-", gender:"-"},
+  {word:"ἡμεῖς", tr:"мы", type:"pron", decl:"-", gender:"-"},
+  {word:"ὑμεῖς", tr:"вы", type:"pron", decl:"-", gender:"-"},
+  {word:"αὐτός", tr:"он, сам", type:"pron", decl:"2", gender:"м"},
+  {word:"αὐτή", tr:"она, сама", type:"pron", decl:"1", gender:"ж"},
+  {word:"αὐτό", tr:"оно, само", type:"pron", decl:"2", gender:"с"},
+
+  /* ========== Местоимения указательные ========== */
+  {word:"οὗτος", tr:"этот", type:"pron", decl:"-", gender:"м"},
+  {word:"αὕτη", tr:"эта", type:"pron", decl:"-", gender:"ж"},
+  {word:"τοῦτο", tr:"это", type:"pron", decl:"-", gender:"с"},
+  {word:"ἐκεῖνος", tr:"тот", type:"pron", decl:"-", gender:"м"},
+  {word:"ἐκείνη", tr:"та", type:"pron", decl:"-", gender:"ж"},
+  {word:"ἐκεῖνο", tr:"то", type:"pron", decl:"-", gender:"с"},
+  {word:"ὅδε", tr:"этот (вот)", type:"pron", decl:"-", gender:"м"},
+  {word:"τοιοῦτος", tr:"такой", type:"pron", decl:"-", gender:"м"},
+  {word:"τηλικοῦτος", tr:"столь великий", type:"pron", decl:"-", gender:"м"},
+
+  /* ========== Местоимения относительные ========== */
+  {word:"ὅς", tr:"который", type:"pron", decl:"-", gender:"м"},
+  {word:"ἥ", tr:"которая", type:"pron", decl:"-", gender:"ж"},
+  {word:"ὅ", tr:"которое", type:"pron", decl:"-", gender:"с"},
+  {word:"ὅστις", tr:"кто бы ни, всякий кто", type:"pron", decl:"-", gender:"м"},
+  {word:"ὅσος", tr:"сколько, сколь велик", type:"pron", decl:"-", gender:"м"},
+  {word:"οἷος", tr:"какой", type:"pron", decl:"-", gender:"м"},
+
+  /* ========== Местоимения вопросительные и неопределённые ========== */
+  {word:"τίς", tr:"кто? что?", type:"pron", decl:"-", gender:"-"},
+  {word:"τις", tr:"кто-то, некто", type:"pron", decl:"-", gender:"-"},
+  {word:"πόσος", tr:"сколько?", type:"pron", decl:"-", gender:"м"},
+  {word:"ποῖος", tr:"какой?", type:"pron", decl:"-", gender:"м"},
+  {word:"ἕτερος", tr:"другой (из двух)", type:"pron", decl:"2", gender:"м"},
+  {word:"ἄλλος", tr:"иной, другой", type:"pron", decl:"2", gender:"м"},
+  {word:"ἀλλήλων", tr:"друг друга", type:"pron", decl:"-", gender:"-"},
+  {word:"ἕκαστος", tr:"каждый", type:"pron", decl:"2", gender:"м"},
+  {word:"πᾶς", tr:"весь, всякий", type:"pron", decl:"3", gender:"м"},
+  {word:"οὐδείς", tr:"никто, ничто", type:"pron", decl:"-", gender:"-"},
+  {word:"μηδείς", tr:"никто (запрет.)", type:"pron", decl:"-", gender:"-"},
+
+  /* ========== Наречия ========== */
+  {word:"νῦν", tr:"теперь, сейчас", type:"adv", decl:"-", gender:"-"},
+  {word:"τότε", tr:"тогда", type:"adv", decl:"-", gender:"-"},
+  {word:"ὧδε", tr:"здесь, сюда", type:"adv", decl:"-", gender:"-"},
+  {word:"ἐκεῖ", tr:"там", type:"adv", decl:"-", gender:"-"},
+  {word:"πάντοτε", tr:"всегда", type:"adv", decl:"-", gender:"-"},
+  {word:"οὐδέποτε", tr:"никогда", type:"adv", decl:"-", gender:"-"},
+  {word:"ποτέ", tr:"когда-то, некогда", type:"adv", decl:"-", gender:"-"},
+  {word:"ἄρτι", tr:"сейчас, только что", type:"adv", decl:"-", gender:"-"},
+  {word:"εὐθύς", tr:"тотчас, сразу", type:"adv", decl:"-", gender:"-"},
+  {word:"πάλιν", tr:"снова, опять", type:"adv", decl:"-", gender:"-"},
+  {word:"ὅτε", tr:"когда", type:"adv", decl:"-", gender:"-"},
+  {word:"ὅπου", tr:"где", type:"adv", decl:"-", gender:"-"},
+  {word:"ὡς", tr:"как", type:"adv", decl:"-", gender:"-"},
+  {word:"οὕτως", tr:"так, таким образом", type:"adv", decl:"-", gender:"-"},
+  {word:"καλῶς", tr:"хорошо", type:"adv", decl:"-", gender:"-"},
+  {word:"κακῶς", tr:"плохо", type:"adv", decl:"-", gender:"-"},
+  {word:"ποῦ", tr:"где?", type:"adv", decl:"-", gender:"-"},
+  {word:"πόθεν", tr:"откуда?", type:"adv", decl:"-", gender:"-"},
+  {word:"ποῖ", tr:"куда?", type:"adv", decl:"-", gender:"-"},
+
+  /* ========== Предлоги ========== */
+  {word:"ἐν", tr:"в (с дат.)", type:"prep", decl:"-", gender:"-"},
+  {word:"εἰς", tr:"в (с вин.)", type:"prep", decl:"-", gender:"-"},
+  {word:"ἐκ", tr:"из (с род.)", type:"prep", decl:"-", gender:"-"},
+  {word:"ἀπό", tr:"от (с род.)", type:"prep", decl:"-", gender:"-"},
+  {word:"πρός", tr:"к (с вин.)", type:"prep", decl:"-", gender:"-"},
+  {word:"διά", tr:"через (вин.), посредством (род.)", type:"prep", decl:"-", gender:"-"},
+  {word:"κατά", tr:"по, против (род./вин.)", type:"prep", decl:"-", gender:"-"},
+  {word:"μετά", tr:"с (род.), после (вин.)", type:"prep", decl:"-", gender:"-"},
+  {word:"περί", tr:"о (род.), вокруг (вин.)", type:"prep", decl:"-", gender:"-"},
+  {word:"ὑπό", tr:"под (вин.), от (род.)", type:"prep", decl:"-", gender:"-"},
+  {word:"ἐπί", tr:"на (род./дат./вин.)", type:"prep", decl:"-", gender:"-"},
+  {word:"παρά", tr:"от, у, при (род./дат./вин.)", type:"prep", decl:"-", gender:"-"},
+  {word:"πρό", tr:"перед (с род.)", type:"prep", decl:"-", gender:"-"},
+  {word:"σύν", tr:"с (с дат.)", type:"prep", decl:"-", gender:"-"},
+  {word:"ὑπέρ", tr:"за (род.), выше (вин.)", type:"prep", decl:"-", gender:"-"},
+  {word:"ἀντί", tr:"вместо (с род.)", type:"prep", decl:"-", gender:"-"},
+  {word:"ἄχρι", tr:"до (с род.)", type:"prep", decl:"-", gender:"-"},
+  {word:"μέχρι", tr:"до (с род.)", type:"prep", decl:"-", gender:"-"},
+  {word:"ἕως", tr:"до, пока", type:"prep", decl:"-", gender:"-"},
+
+  /* ========== Союзы и частицы ========== */
+  {word:"καί", tr:"и, даже", type:"conj", decl:"-", gender:"-"},
+  {word:"δέ", tr:"же, а, но", type:"conj", decl:"-", gender:"-"},
+  {word:"ἀλλά", tr:"но", type:"conj", decl:"-", gender:"-"},
+  {word:"γάρ", tr:"ибо, ведь", type:"conj", decl:"-", gender:"-"},
+  {word:"οὖν", tr:"итак, следовательно", type:"conj", decl:"-", gender:"-"},
+  {word:"ὅτι", tr:"что, потому что", type:"conj", decl:"-", gender:"-"},
+  {word:"ἵνα", tr:"чтобы", type:"conj", decl:"-", gender:"-"},
+  {word:"ἐάν", tr:"если (с сослаг.)", type:"conj", decl:"-", gender:"-"},
+  {word:"εἰ", tr:"если", type:"conj", decl:"-", gender:"-"},
+  {word:"ὥστε", tr:"так что", type:"conj", decl:"-", gender:"-"},
+  {word:"διό", tr:"потому, посему", type:"conj", decl:"-", gender:"-"},
+  {word:"ἤ", tr:"или, чем", type:"conj", decl:"-", gender:"-"},
+  {word:"εἴτε", tr:"ли … ли", type:"conj", decl:"-", gender:"-"},
+  {word:"μή", tr:"не (запрет)", type:"conj", decl:"-", gender:"-"},
+  {word:"οὐ", tr:"не (факт)", type:"conj", decl:"-", gender:"-"},
+  {word:"οὐκ", tr:"не (перед гласной)", type:"conj", decl:"-", gender:"-"},
+  {word:"οὐχ", tr:"не (перед придых.)", type:"conj", decl:"-", gender:"-"},
+  {word:"μήν", tr:"поистине, же", type:"conj", decl:"-", gender:"-"},
+  {word:"μέν … δέ", tr:"с одной стороны … с другой", type:"conj", decl:"-", gender:"-"},
+
+  /* ========== Числительные ========== */
+  {word:"εἷς", tr:"один", type:"num", decl:"-", gender:"м"},
+  {word:"δύο", tr:"два", type:"num", decl:"-", gender:"-"},
+  {word:"τρεῖς", tr:"три", type:"num", decl:"-", gender:"м"},
+  {word:"τέσσαρες", tr:"четыре", type:"num", decl:"-", gender:"м"},
+  {word:"πέντε", tr:"пять", type:"num", decl:"-", gender:"-"},
+  {word:"ἕξ", tr:"шесть", type:"num", decl:"-", gender:"-"},
+  {word:"ἑπτά", tr:"семь", type:"num", decl:"-", gender:"-"},
+  {word:"ὀκτώ", tr:"восемь", type:"num", decl:"-", gender:"-"},
+  {word:"ἐννέα", tr:"девять", type:"num", decl:"-", gender:"-"},
+  {word:"δέκα", tr:"десять", type:"num", decl:"-", gender:"-"},
+  {word:"δώδεκα", tr:"двенадцать", type:"num", decl:"-", gender:"-"},
+  {word:"ἑκατόν", tr:"сто", type:"num", decl:"-", gender:"-"},
+  {word:"χίλιοι", tr:"тысяча", type:"num", decl:"-", gender:"м"},
+
+  /* ========== Другие части речи ========== */
+  {word:"ἀμήν", tr:"аминь, истинно", type:"other", decl:"-", gender:"-"},
+  {word:"ναί", tr:"да", type:"other", decl:"-", gender:"-"},
+  {word:"οὔ", tr:"нет", type:"other", decl:"-", gender:"-"},
+  {word:"ἰδού", tr:"вот, се", type:"other", decl:"-", gender:"-"},
+  {word:"ἄρα", tr:"итак, следовательно", type:"other", decl:"-", gender:"-"}
+];
+
+/* =========================================================
+   СПРАВОЧНИКИ
+   ========================================================= */
+const typeRus = {
+  "adj":"прилагательное",
+  "pron":"местоимение",
+  "adv":"наречие",
+  "prep":"предлог",
+  "conj":"союз / частица",
+  "num":"числительное",
+  "other":"служебное слово"
+};
+
+const declRus = {"1":"1-е склонение","2":"2-е склонение","3":"3-е склонение"};
+const genderRus = {"м":"мужской род","ж":"женский род","с":"средний род","-":"—"};
+
+function buildRule(w) {
+  const type = typeRus[w.type] || "слово";
+  if (w.type === "adj") {
+    if (w.decl === "1") return `Прилагательное 1-го склонения (ж.р.). Согласуется с сущ. ж.р.`;
+    if (w.decl === "2") return `Прилагательное 2-го склонения (${genderRus[w.gender]}). Согласуется с сущ.`;
+    if (w.decl === "3") return `Прилагательное 3-го склонения. Особая парадигма.`;
+  }
+  if (w.type === "pron") return `Местоимение. Склоняется по падежам и числам.`;
+  if (w.type === "adv") return `Наречие — неизменяемая часть речи.`;
+  if (w.type === "prep") return `Предлог. Управляет определённым падежом.`;
+  if (w.type === "conj") return `Союз или частица. Не склоняется и не спрягается.`;
+  if (w.type === "num") return `Числительное.`;
+  return `${type}. Служебное слово.`;
+}
+
+/* =========================================================
+   СОСТОЯНИЕ
+   ========================================================= */
+let tab = "gr-ru";
+let deck = [];
+let current = null;
+let answered = false;
+let score = 0, total = 0;
+
+function shuffle(a) {
+  const arr = a.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function buildDeck() {
+  deck = shuffle(words.slice());
+}
+
+function setTab(t) {
+  tab = t;
+  document.getElementById("tabGrRu").classList.toggle("active", t === "gr-ru");
+  document.getElementById("tabRuGr").classList.toggle("active", t === "ru-gr");
+  score = 0; total = 0;
+  buildDeck();
+  nextCard();
+}
+
+function nextCard() {
+  if (deck.length === 0) buildDeck();
+  current = deck.pop();
+  answered = false;
+
+  const fb = document.getElementById("feedback");
+  fb.textContent = ""; fb.className = "feedback";
+  const info = document.getElementById("info");
+  info.className = "info"; info.innerHTML = "";
+  document.getElementById("nextBtn").style.display = "none";
+
+  const wordEl = document.getElementById("word");
+  const qEl = document.getElementById("question");
+  const box = document.getElementById("options");
+  box.innerHTML = "";
+
+  if (tab === "gr-ru") {
+    wordEl.textContent = current.word;
+    wordEl.className = "word";
+    qEl.textContent = "Как переводится это слово?";
+
+    const correct = {key:current.tr, label:current.tr};
+    const others = words.filter(w => w.tr !== current.tr);
+    const wrong = shuffle(others).slice(0, 3).map(w => ({key:w.tr, label:w.tr}));
+    const shown = shuffle([correct, ...wrong]);
+
+    shown.forEach(o => {
+      const b = document.createElement("button");
+      b.className = "opt";
+      b.textContent = o.label;
+      b.dataset.key = o.key;
+      b.onclick = () => check(o.key, b, correct.key);
+      box.appendChild(b);
+    });
+  } else {
+    wordEl.textContent = current.tr;
+    wordEl.className = "word rus-word";
+    qEl.textContent = "Как это по-гречески?";
+
+    const correct = {key:current.word, label:current.word};
+    const others = words.filter(w => w.word !== current.word);
+    const wrong = shuffle(others).slice(0, 3).map(w => ({key:w.word, label:w.word}));
+    const shown = shuffle([correct, ...wrong]);
+
+    shown.forEach(o => {
+      const b = document.createElement("button");
+      b.className = "opt greek";
+      b.textContent = o.label;
+      b.dataset.key = o.key;
+      b.onclick = () => check(o.key, b, correct.key);
+      box.appendChild(b);
+    });
+  }
+
+  document.getElementById("progress").textContent =
+    `Вопрос ${total + 1} • Осталось в колоде: ${deck.length}`;
+}
+
+function check(choiceKey, btn, correctKey) {
+  if (answered) return;
+  answered = true; total++;
+
+  const isRight = choiceKey === correctKey;
+  const correctBtn = [...document.querySelectorAll("#options button")]
+    .find(b => b.dataset.key === correctKey);
+
+  document.querySelectorAll("#options button").forEach(b => {
+    b.disabled = true;
+    if (b === correctBtn) b.classList.add("correct");
+  });
+
+  const fb = document.getElementById("feedback");
+  if (isRight) {
+    score++;
+    fb.textContent = "✅ Верно!";
+    fb.className = "feedback ok";
+  } else {
+    btn.classList.add("wrong");
+    fb.textContent = `❌ Неверно. Правильно: ${correctBtn.textContent}`;
+    fb.className = "feedback no";
+  }
+
+  const info = document.getElementById("info");
+  let html = `
+    <div class="row"><span class="lbl">Слово:</span> ${current.word} — «${current.tr}»</div>
+    <div class="row"><span class="lbl">Часть речи:</span> ${typeRus[current.type] || "слово"}</div>
+  `;
+  if (current.type === "adj") {
+    html += `
+      <div class="row"><span class="lbl">Род:</span> ${genderRus[current.gender]}</div>
+      <div class="row"><span class="lbl">Склонение:</span> ${declRus[current.decl] || "—"}</div>
+    `;
+  }
+  html += `<div class="row"><span class="lbl">Правило:</span> ${buildRule(current)}</div>`;
+  info.innerHTML = html;
+  info.classList.add("show");
+
+  document.getElementById("nextBtn").style.display = "inline-block";
+  document.getElementById("score").textContent = `Счёт: ${score} / ${total}`;
+}
+
+buildDeck();
+nextCard();
+</script>
+</body>
+</html>
