@@ -1,0 +1,14 @@
+{
+  "name": "Греческий — Уровень 3. Прилагательные",
+  "short_name": "Греческий 3",
+  "start_url": "./Greek3.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#dc2626",
+  "theme_color": "#dc2626",
+  "lang": "ru",
+  "icons": [
+    {"src": "icon-red-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "icon-red-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}
