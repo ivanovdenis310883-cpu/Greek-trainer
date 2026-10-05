@@ -1,12 +1,11 @@
-const CACHE_NAME = 'greek-trainer-v1';
+const CACHE_NAME = 'greek-trainer-v2';
 const urlsToCache = [
   './',
   './index.html',
-  './perevod.html',
   './Greek1.html',
   './Greek2.html',
   './Greek3.html',
-  './manifest.json'
+  './site.webmanifest'
 ];
 
 // Установка — кешируем файлы
@@ -35,7 +34,6 @@ self.addEventListener('fetch', event => {
     caches.match(event.request).then(response => {
       return response || fetch(event.request).then(fetchRes => {
         return caches.open(CACHE_NAME).then(cache => {
-          // Кешируем новые файлы
           if (event.request.method === 'GET') {
             cache.put(event.request, fetchRes.clone());
           }
