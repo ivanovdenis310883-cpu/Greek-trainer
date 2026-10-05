@@ -1,11 +1,14 @@
-const CACHE_NAME = 'greek-trainer-v2';
+const CACHE_NAME = 'greek-trainer-v3';
 const urlsToCache = [
   './',
   './index.html',
   './Greek1.html',
   './Greek2.html',
   './Greek3.html',
-  './site.webmanifest'
+  './site.webmanifest',
+  './manifest-green.json',
+  './manifest-blue.json',
+  './manifest-red.json'
 ];
 
 // Установка — кешируем файлы
