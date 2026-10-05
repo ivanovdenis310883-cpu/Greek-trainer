@@ -482,5 +482,14 @@ function check(choiceKey, btn, correctKey) {
 buildDeck();
 nextCard();
 </script>
+ <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log('✅ SW'))
+        .catch(err => console.log('❌ SW:', err));
+    });
+  }
+</script>
 </body>
 </html>
