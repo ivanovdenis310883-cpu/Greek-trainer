@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0ea5e9">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>🎢 Парк развлечений</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; overscroll-behavior: none; }
+  body {
+    font-family: -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #0c4a6e, #0ea5e9, #7dd3fc);
+    background-attachment: fixed;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex; justify-content: center; align-items: flex-start;
+    padding: 8px;
+    -webkit-text-size-adjust: 100%;
+  }
+  .card {
+    background: #fff; border-radius: 16px; padding: 16px;
+    max-width: 720px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    margin-bottom: 8px;
+  }
+  h1 { margin: 0 0 6px; color: #0c4a6e; font-size: 20px; text-align: center; }
+  .subtitle { color: #0284c7; font-size: 11px; margin-bottom: 12px; text-align: center; letter-spacing: .5px; font-weight: 700; }
+
+  .stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+    margin-bottom: 12px; font-size: 13.5px;
+  }
+  .stat {
+    padding: 8px 10px; border-radius: 10px;
+    background: #f0f9ff; display: flex; justify-content: space-between;
+    align-items: center; font-weight: 600;
+    min-height: 38px;
+  }
+  .stat .val { color: #0c4a6e; font-weight: 700; }
+  .stat.warn { background: #fef3c7; }
+  .stat.warn .val { color: #92400e; }
+  .stat.danger { background: #fee2e2; }
+  .stat.danger .val { color: #991b1b; }
+
+  .day-badge {
+    display: block; text-align: center; font-size: 14.5px; font-weight: 700;
+    color: #0c4a6e; padding: 10px; background: #e0f2fe;
+    border-radius: 10px; margin-bottom: 12px;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .day-badge .actions { color: #0284c7; }
+  .day-badge .actions.warn { color: #dc2626; }
+
+  .log {
+    background: #f8fafc; border-left: 4px solid #0ea5e9;
+    border-radius: 8px; padding: 12px;
+    margin-bottom: 12px;
+    font-size: 13.5px; color: #333; line-height: 1.6;
+    max-height: 45vh; overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .log p { margin: 5px 0; }
+  .log .good { color: #16a34a; font-weight: 600; }
+  .log .bad { color: #dc2626; font-weight: 600; }
+  .log .info { color: #0284c7; font-weight: 600; }
+  .log .money { color: #ca8a04; font-weight: 700; }
+  .log .small { color: #666; font-size: 12.5px; }
+  .log h4 { margin: 10px 0 4px; color: #0c4a6e; font-size: 14px; }
+
+  .actions { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  button.act {
+    padding: 14px; font-size: 15px; border: 2px solid #0284c7;
+    background: #fff; color: #0c4a6e; border-radius: 10px;
+    cursor: pointer; transition: all .15s; font-weight: 600;
+    font-family: inherit; text-align: left; line-height: 1.4;
+    min-height: 52px; white-space: pre-line;
+    -webkit-user-select: none; user-select: none;
+    touch-action: manipulation;
+  }
+  button.act:active:not(:disabled) { background: #0284c7; color: #fff; }
+  button.act:disabled { opacity: .4; cursor: not-allowed; }
+  button.act.primary { background: #0ea5e9; color: #fff; }
+  button.act.primary:active:not(:disabled) { background: #0284c7; }
+  button.act.danger { border-color: #dc2626; color: #991b1b; }
+  button.act.danger:active:not(:disabled) { background: #dc2626; color: #fff; }
+  button.act.success { border-color: #16a34a; color: #166534; }
+  button.act.success:active:not(:disabled) { background: #16a34a; color: #fff; }
+
+  .sub-title {
+    font-size: 12px; font-weight: 700; color: #0284c7;
+    letter-spacing: .5px; margin: 12px 0 6px; text-transform: uppercase;
+  }
+
+  .park {
+    background: #f0f9ff; border-radius: 10px; padding: 12px;
+    margin-bottom: 12px; font-size: 13px;
+  }
+  .park h4 { margin: 0 0 8px; color: #0c4a6e; font-size: 14px; }
+  .park ul { margin: 0; padding-left: 20px; color: #333; }
+  .park li { margin: 5px 0; }
+  .park .hint { color: #666; font-size: 12px; display: block; margin-top: 2px; }
+
+  .back {
+    margin-top: 10px; background: #e0f2fe; color: #0c4a6e;
+    padding: 14px; width: 100%; border: none;
+    border-radius: 10px; font-weight: 700; cursor: pointer;
+    font-family: inherit; font-size: 15px;
+    min-height: 50px; touch-action: manipulation;
+  }
+  .back:active { background: #bae6fd; }
+
+  .feedback {
+    text-align: center; font-size: 16px; font-weight: 700;
+    padding: 10px; border-radius: 10px; margin-bottom: 12px;
+  }
+  .feedback.good { background: #dcfce7; color: #166534; }
+  .feedback.bad { background: #fee2e2; color: #991b1b; }
+
+  /* ==== АДАПТАЦИЯ ПОД МОБИЛЬНЫЕ ==== */
+  @media (max-width: 480px) {
+    body { padding: 6px; }
+    .card { padding: 12px; border-radius: 12px; }
+    h1 { font-size: 18px; }
+    .subtitle { font-size: 10px; }
+    .stats { font-size: 12.5px; gap: 5px; }
+    .stat { padding: 7px 9px; min-height: 36px; }
+    .day-badge { font-size: 13.5px; padding: 9px; }
+    button.act { padding: 12px; font-size: 14px; min-height: 48px; }
+    .log { font-size: 12.5px; padding: 10px; max-height: 40vh; }
+    .park { font-size: 12.5px; padding: 10px; }
+    .back { font-size: 14px; min-height: 46px; }
+  }
+
+  /* Очень узкие экраны */
+  @media (max-width: 360px) {
+    .stats { grid-template-columns: 1fr; }
+    h1 { font-size: 17px; }
+    button.act { font-size: 13px; padding: 11px; }
+  }
+
+  /* Отступ для iPhone с «челкой» */
+  @supports (padding: max(0px)) {
+    body {
+      padding-left: max(8px, env(safe-area-inset-left));
+      padding-right: max(8px, env(safe-area-inset-right));
+      padding-top: max(8px, env(safe-area-inset-top));
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+    }
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>🎢 Парк развлечений</h1>
+  <div class="subtitle">СИМУЛЯТОР ДИРЕКТОРА ПАРКА</div>
+
+  <div id="stats" class="stats"></div>
+  <div class="day-badge" id="dayBadge">День 1</div>
+
+  <div class="log" id="log"></div>
+
+  <div id="menu"></div>
+</div>
+
+<script>
+/* =========================================================
+   ИГРОВОЕ СОСТОЯНИЕ
+   ========================================================= */
+const S = {
+  money: 25000,
+  day: 1,
+  rep: 50,
+  joy: 0,
+  food: 0,
+  visitors: 0,
+  attractions: [],
+  staff: [],
+  insurance: { fire: false, theft: false, full: false },
+  actionsLeft: 2,
+  slots: 5,
+  expansions: 0,
+  gameOver: false
+};
+
+/* =========================================================
+   КАТАЛОГ АТТРАКЦИОНОВ
+   ========================================================= */
+const ATTRACTIONS = [
+  {name:"🍿 Ларёк с попкорном", price:6000, income:200, joy:5, food:10, repReq:0, type:"food", capacity:50},
+  {name:"🥤 Ларёк с лимонадом", price:4000, income:150, joy:3, food:8, repReq:0, type:"food", capacity:40},
+  {name:"🎠 Карусель", price:10000, income:300, joy:8, food:0, repReq:0, type:"ride", capacity:150},
+  {name:"🎯 Тир", price:12000, income:400, joy:7, food:0, repReq:0, type:"ride", capacity:50},
+  {name:"🌭 Хот-доги", price:16000, income:500, joy:5, food:15, repReq:50, type:"food", capacity:80},
+  {name:"🍦 Кафе-мороженое", price:20000, income:700, joy:10, food:15, repReq:50, type:"food", capacity:80},
+  {name:"🎭 Кукольный театр", price:24000, income:800, joy:12, food:0, repReq:50, type:"ride", capacity:200},
+  {name:"🎡 Колесо обозрения", price:30000, income:1200, joy:15, food:0, repReq:150, type:"ride", capacity:300},
+  {name:"🚂 Паровозик", price:50000, income:1800, joy:18, food:0, repReq:150, type:"ride", capacity:180},
+  {name:"🍕 Пиццерия", price:60000, income:2000, joy:15, food:20, repReq:150, type:"food", capacity:150},
+  {name:"🍔 Бургер-хаус", price:80000, income:3000, joy:12, food:25, repReq:300, type:"food", capacity:200},
+  {name:"🎢 Горки «Весёлый вихрь»", price:100000, income:3500, joy:25, food:0, repReq:300, type:"ride", capacity:250},
+  {name:"🎠 Карусель-красавица", price:140000, income:4500, joy:28, food:0, repReq:300, type:"ride", capacity:350},
+  {name:"🏰 Замок смеха", price:200000, income:7000, joy:30, food:0, repReq:500, type:"ride", capacity:400},
+  {name:"🎡 Большое колесо", price:240000, income:8000, joy:35, food:0, repReq:500, type:"ride", capacity:500},
+  {name:"🍱 Ресторан «У моря»", price:300000, income:10000, joy:25, food:30, repReq:500, type:"food", capacity:400},
+  {name:"🚀 Космический полёт", price:400000, income:15000, joy:40, food:0, repReq:700, type:"ride", capacity:100},
+  {name:"🍽️ Фуд-корт", price:500000, income:18000, joy:30, food:35, repReq:700, type:"food", capacity:600},
+  {name:"🎢 Гигантские горки", price:600000, income:20000, joy:45, food:0, repReq:700, type:"ride", capacity:400},
+  {name:"🎡 Колесо чудес", price:1000000, income:35000, joy:55, food:0, repReq:900, type:"ride", capacity:800},
+  {name:"🎢 Царь-горки", price:1400000, income:50000, joy:60, food:0, repReq:900, type:"ride", capacity:600},
+  {name:"🎩 VIP-ресторан", price:1000000, income:35000, joy:40, food:50, repReq:1000, type:"food", capacity:800},
+  {name:"👑 Императорский парк", price:2000000, income:100000, joy:80, food:50, repReq:1000, type:"ride", capacity:1500}
+];
+
+/* =========================================================
+   ПЕРСОНАЛ И ЗАЩИТА
+   ========================================================= */
+const STAFF = [
+  {name:"🧹 Уборщик", price:2000, salary:200, joy:5, food:0, protect:"", desc:"+5 😊 постоянно"},
+  {name:"🎭 Аниматор", price:4000, salary:400, joy:10, food:0, protect:"", desc:"+10 😊 постоянно"},
+  {name:"👨‍🍳 Повар", price:5000, salary:500, joy:0, food:10, protect:"", desc:"+10 🍔 постоянно"},
+  {name:"👨‍🔧 Механик", price:6000, salary:500, joy:0, food:0, protect:"break", desc:"Снижает поломки на 50%"},
+  {name:"🚔 Охранник", price:8000, salary:600, joy:0, food:0, protect:"theft", desc:"Защита от краж на 50%"},
+  {name:"🚔🚔 Два охранника", price:16000, salary:1200, joy:0, food:0, protect:"theft2", desc:"Защита от краж на 80%"},
+  {name:"⚕️ Врач", price:15000, salary:800, joy:5, food:0, protect:"poison", desc:"Помощь при отравлениях"},
+  {name:"🚒 Пожарный щит", price:20000, salary:0, joy:0, food:0, protect:"fire", desc:"Защита от пожаров 70%"},
+  {name:"👮 Полицейский пост", price:50000, salary:2000, joy:0, food:0, protect:"police", desc:"Полная защита, +10 ⭐"}
+];
+
+/* =========================================================
+   ХОРОШИЕ СОБЫТИЯ (20 штук)
+   ========================================================= */
+const GOOD_EVENTS = [
+  // ===== Мелкие (вес 3 — чаще) =====
+  {weight:3, effect:() => {S.joy += 5; return "🌈 Радуга над парком! +5 😊";}},
+  {weight:3, effect:() => {S.joy += 3; S.visitors += 10; return "💐 Цветы подарили парку! +3 😊, +10 👥";}},
+  {weight:3, effect:() => {S.visitors += 15; return "🎈 Праздник воздушных шаров! +15 👥";}},
+  {weight:3, effect:() => {S.joy += 4; return "🎵 Хорошая музыка в парке! +4 😊";}},
+  {weight:3, effect:() => {S.visitors += 12; S.food += 2; return "🍿 Посетители хвалят попкорн! +12 👥, +2 🍔";}},
+
+  // ===== Обычные (вес 1) =====
+  {weight:1, effect:() => {S.money += 5000; S.rep += 10; S.visitors += 50; return "🌟 Блогер снял видео! +50 👥, +5 000 ₽, +10 ⭐";}},
+  {weight:1, effect:() => {S.rep += 15; S.visitors += 30; return "📰 Статья в газете! +30 👥, +15 ⭐";}},
+  {weight:1, effect:() => {S.rep += 20; S.joy += 10; return "🏆 Лучший парк района! +20 ⭐, +10 😊";}},
+  {weight:1, effect:() => {S.money += 20000; return "🎁 Спонсор дал 20 000 ₽!";}},
+  {weight:1, effect:() => {S.visitors += 30; S.joy += 5; return "👨‍👩‍👧 Семейный день! +30 👥, +5 😊";}},
+  {weight:1, effect:() => {S.joy += 5; return "🌞 Отличная погода! +5 😊";}},
+  {weight:1, effect:() => {S.visitors += 50; return "🎉 Праздник в городе! +50 👥";}},
+  {weight:1, effect:() => {S.visitors += 80; S.rep += 5; return "🏫 Экскурсия школьников! +80 👥, +5 ⭐";}},
+  {weight:1, effect:() => {S.money += 5000; S.rep += 5; return "🎂 День рождения в парке! +5 000 ₽, +5 ⭐";}},
+  {weight:1, effect:() => {S.visitors += 20; S.food += 5; return "🍦 Конкурс мороженого! +20 👥, +5 🍔";}},
+  {weight:1, effect:() => {S.visitors += 60; return "👨‍👩‍👧‍👦 Многодетные пришли! +60 👥";}},
+  {weight:1, effect:() => {S.joy += 8; S.rep += 3; return "📸 Фотосессия в парке! +8 😊, +3 ⭐";}},
+  {weight:1, effect:() => {S.money += 8000; return "🍔 Местный бизнес заказал корпоратив! +8 000 ₽";}},
+
+  // ===== Редкие (вес 0.3) =====
+  {weight:0.3, effect:() => {S.visitors += 200; return "📺 ТВ-сюжет о парке! +200 👥";}},
+  {weight:0.3, effect:() => {S.money += 50000; S.rep += 30; return "🏅 Награда мэра! +50 000 ₽, +30 ⭐";}},
+  {weight:0.3, effect:() => {S.money += 30000; return "🎁 Корпоратив в парке! +30 000 ₽";}},
+  {weight:0.3, effect:() => {S.money += 50000; return "💰 Инвестор заинтересовался! +50 000 ₽";}},
+  {weight:0.3, effect:() => {S.rep += 25; return "🏆 Конкурс «Лучший аттракцион»! +25 ⭐";}},
+  {weight:0.3, effect:() => {S.visitors += 150; S.joy += 15; return "🎤 Концерт в парке! +150 👥, +15 😊";}},
+  {weight:0.3, effect:() => {S.visitors += 100; S.rep += 20; return "⭐ Знаменитость пришла! +100 👥, +20 ⭐";}}
+];
+
+/* =========================================================
+   ПЛОХИЕ СОБЫТИЯ (18 штук)
+   ========================================================= */
+const BAD_EVENTS = [
+  // ===== Мелкие (вес 3 — чаще) =====
+  {weight:3, effect:() => {S.joy -= 3; return "🌧️ Дождь. -3 😊";}},
+  {weight:3, effect:() => {S.joy -= 2; return "💨 Ветрено. -2 😊";}},
+  {weight:3, effect:() => {S.visitors = Math.floor(S.visitors * 0.9); return "🚧 Ремонт дороги рядом. -10% 👥";}},
+  {weight:3, effect:() => {S.joy -= 3; return "😴 Скучный день. -3 😊";}},
+  {weight:3, effect:() => {S.money -= 1000; return "🛠️ Мелкие поломки. -1 000 ₽";}},
+
+  // ===== Обычные (вес 1) =====
+  {weight:1, effect:() => {S.joy -= 5; S.rep -= 3; return "⛈️ Гроза. -5 😊, -3 ⭐";}},
+  {weight:1, effect:() => {breakRandomAttraction(); S.rep -= 10; return "🌪️ Ураган! Аттракцион сломан, -10 ⭐";}},
+  {weight:1, effect:() => {
+    if (S.insurance.fire || S.insurance.full) return "🔥 Пожар! Страховка покрыла ущерб ✅";
+    breakRandomAttraction(); S.rep -= 20; S.money -= 30000;
+    return "🔥 Пожар! Аттракцион сломан, -20 ⭐, -30 000 ₽";
+  }},
+  {weight:1, effect:() => {
+    const guard = S.staff.find(s => s.protect === "police" || s.protect === "theft" || s.protect === "theft2");
+    if (guard && guard.protect === "police") return "🥷 Воры! Полицейский пост защитил ✅";
+    if (guard) return "🥷 Воры! Охрана отпугнула их";
+    if (S.insurance.theft || S.insurance.full) return "🥷 Воры! Страховка вернула деньги ✅";
+    const loss = Math.floor(S.money * 0.2);
+    S.money -= loss;
+    return `🥷 Воры ограбили кассу! -${loss.toLocaleString("ru-RU")} ₽`;
+  }},
+  {weight:1, effect:() => {S.joy -= 15; S.rep -= 5; S.money -= 5000; return "🐀 Крысы! -15 😊, -5 ⭐, -5 000 ₽";}},
+  {weight:1, effect:() => {
+    if (S.staff.find(s => s.protect === "poison")) return "🤒 Отравление! Врач быстро помог ✅";
+    S.joy -= 25; S.rep -= 20; S.money -= 15000;
+    return "🤒 Отравление! -25 😊, -20 ⭐, штраф 15 000 ₽";
+  }},
+  {weight:1, effect:() => {
+    if (S.staff.find(s => s.protect === "police")) return "😡 Драка! Полиция успокоила ✅";
+    S.rep -= 10; S.joy -= 10;
+    return "😡 Драка! -10 ⭐, -10 😊";
+  }},
+  {weight:1, effect:() => {S.money -= 20000; return "🚨 Проверка СЭС! Штраф 20 000 ₽";}},
+  {weight:1, effect:() => {S.visitors = Math.floor(S.visitors * 0.75); return "📉 Конкурент рядом! -25% 👥";}},
+  {weight:1, effect:() => {S.joy -= 8; S.rep -= 4; return "🗑️ Парк замусорен! -8 😊, -4 ⭐";}},
+  {weight:1, effect:() => {S.money -= 3000; S.joy -= 5; return "🚽 Проблемы с санузлами! -3 000 ₽, -5 😊";}},
+  {weight:1, effect:() => {S.joy -= 12; return "🚨 Потерялся ребёнок (нашли). -12 😊";}},
+
+  // ===== Редкие (вес 0.3) =====
+  {weight:0.3, effect:() => {S.money -= 50000; S.rep -= 15; return "⚖️ Судебный иск! -50 000 ₽, -15 ⭐";}},
+  {weight:0.3, effect:() => {breakRandomAttraction(); breakRandomAttraction(); S.rep -= 20; return "🌊 Наводнение! 2 аттракциона сломаны, -20 ⭐";}},
+  {weight:0.3, effect:() => {S.joy -= 30; S.rep -= 25; S.money -= 30000; return "🚑 Серьёзная травма! -30 😊, -25 ⭐, штраф 30 000 ₽";}},
+  {weight:0.3, effect:() => {S.visitors = Math.floor(S.visitors * 0.5); S.rep -= 10; return "📰 Плохая статья в газете! -50% 👥, -10 ⭐";}}
+];
+
+/* =========================================================
+   УТИЛИТЫ
+   ========================================================= */
+function rnd(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function chance(p) { return Math.random() < p; }
+function fmt(n) { return n.toLocaleString("ru-RU") + " ₽"; }
+
+/* Выбор случайного элемента с учётом веса */
+function weightedRandom(items) {
+  const totalWeight = items.reduce((sum, item) => sum + (item.weight || 1), 0);
+  let roll = Math.random() * totalWeight;
+  for (const item of items) {
+    roll -= (item.weight || 1);
+    if (roll <= 0) return item;
+  }
+  return items[items.length - 1];
+}
+
+function breakRandomAttraction() {
+  const working = S.attractions.filter(a => !a.broken);
+  if (working.length > 0) rnd(working).broken = true;
+}
+
+function totalCapacity() {
+  let cap = 0;
+  S.attractions.forEach(a => { if (!a.broken && a.type === "ride") cap += a.capacity || 0; });
+  return cap;
+}
+
+function totalFoodCapacity() {
+  let cap = 0;
+  S.attractions.forEach(a => { if (!a.broken && a.type === "food") cap += a.capacity || 0; });
+  return cap;
+}
+
+function forecastVisitors() {
+  const cap = totalCapacity();
+  return 10 + Math.floor(cap * 0.5) + S.visitors;
+}
+
+function expansionPrice() {
+  const stage = Math.floor(S.expansions / 3);
+  const prices = [5000, 7000, 9000, 12000, 15000];
+  return prices[Math.min(stage, prices.length - 1)];
+}
+
+/* =========================================================
+   РАСЧЁТ КОНЦА ДНЯ
+   ========================================================= */
+function calculateDay() {
+  const cap = totalCapacity();
+  const foodCap = totalFoodCapacity();
+
+  const baseVisitors = 10;
+  const fromRides = Math.floor(cap * 0.5);
+  const fromBonus = S.visitors;
+  const visitors = baseVisitors + fromRides + fromBonus;
+
+  const entryIncome = visitors * 20;
+  const fedVisitors = Math.min(visitors, foodCap);
+  const foodIncome = fedVisitors * 10;
+
+  const joyBonus = 1 + Math.min(S.joy, 100) / 200;
+  const foodBonus = 1 + Math.min(S.food, 100) / 300;
+  const repBonus = 1 + Math.min(S.rep, 1000) / 2000;
+
+  const base = entryIncome + foodIncome;
+  const total = Math.floor(base * joyBonus * foodBonus * repBonus);
+
+  const rideLoad = cap > 0 ? visitors / cap : (visitors > 0 ? 999 : 0);
+  const foodLoad = foodCap > 0 ? visitors / foodCap : (visitors > 0 ? 999 : 0);
+
+  let joyDelta = 0, foodDelta = 0, repDelta = 0;
+  let rideStatus = "", foodStatus = "";
+
+  if (cap === 0) {
+    rideStatus = "🚨 Нет аттракционов! Посетителям нечего делать.";
+    joyDelta -= 10;
+  } else if (rideLoad <= 0.7) {
+    joyDelta += 2;
+    rideStatus = "🎢 Аттракционы: свободно ✅ (+2 😊)";
+  } else if (rideLoad <= 1.0) {
+    rideStatus = "🎢 Аттракционы: полная загрузка ⚠️";
+  } else if (rideLoad <= 1.5) {
+    joyDelta -= 8; repDelta -= 3;
+    rideStatus = "🎢 Очереди! (-8 😊, -3 ⭐)";
+  } else {
+    joyDelta -= 20; repDelta -= 10;
+    rideStatus = "🎢 ДЛИННЫЕ ОЧЕРЕДИ! (-20 😊, -10 ⭐)";
+  }
+
+  if (foodCap === 0) {
+    foodStatus = "🚨 Нет ларьков! Посетители голодают.";
+    joyDelta -= 10;
+    foodDelta -= 20;
+  } else if (foodLoad <= 0.7) {
+    foodDelta += 2;
+    foodStatus = "🍔 Ларьки: справляются ✅ (+2 🍔)";
+  } else if (foodLoad <= 1.0) {
+    foodStatus = "🍔 Ларьки: полная загрузка ⚠️";
+  } else if (foodLoad <= 1.5) {
+    foodDelta -= 15; joyDelta -= 5;
+    foodStatus = "🍔 Много голодных! (-15 🍔, -5 😊)";
+  } else {
+    foodDelta -= 30; joyDelta -= 15; repDelta -= 10;
+    foodStatus = "🍔 ГОЛОДАЮТ! (-30 🍔, -15 😊, -10 ⭐)";
+  }
+
+  return {
+    visitors, baseVisitors, fromRides, fromBonus,
+    entryIncome, foodIncome, fedVisitors,
+    joyBonus, foodBonus, repBonus,
+    base, total,
+    rideLoad, foodLoad, rideStatus, foodStatus,
+    joyDelta, foodDelta, repDelta
+  };
+}
+
+/* =========================================================
+   ИНТЕРФЕЙС
+   ========================================================= */
+const logEl = document.getElementById("log");
+const statsEl = document.getElementById("stats");
+const menuEl = document.getElementById("menu");
+const dayBadge = document.getElementById("dayBadge");
+
+function addLog(text, cls = "") {
+  const p = document.createElement("p");
+  p.innerHTML = cls ? `<span class="${cls}">${text}</span>` : text;
+  logEl.appendChild(p);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+function clearLog() { logEl.innerHTML = ""; }
+
+function renderStats() {
+  const visitors = forecastVisitors();
+  const cap = totalCapacity();
+  const foodCap = totalFoodCapacity();
+
+  const rideLoad = cap > 0 ? Math.round(visitors / cap * 100) : 0;
+  const foodLoad = foodCap > 0 ? Math.round(visitors / foodCap * 100) : 0;
+
+  const rideIcon = rideLoad <= 70 ? "✅" : rideLoad <= 100 ? "⚠️" : "🚨";
+  const foodIcon = foodLoad <= 70 ? "✅" : foodLoad <= 100 ? "⚠️" : "🚨";
+
+  const rideClass = rideLoad > 100 ? "danger" : rideLoad > 70 ? "warn" : "";
+  const foodClass = foodLoad > 100 ? "danger" : foodLoad > 70 ? "warn" : "";
+
+  statsEl.innerHTML = `
+    <div class="stat"><span>💰 Деньги</span><span class="val">${fmt(S.money)}</span></div>
+    <div class="stat"><span>⭐ Репутация</span><span class="val">${S.rep} / 1000</span></div>
+    <div class="stat"><span>😊 Радость</span><span class="val">${Math.max(0, Math.min(100, S.joy))} / 100</span></div>
+    <div class="stat"><span>🍔 Сытость</span><span class="val">${Math.max(0, Math.min(100, S.food))} / 100</span></div>
+    <div class="stat"><span>👥 Прогноз</span><span class="val">${visitors}</span></div>
+    <div class="stat"><span>🎪 Слотов</span><span class="val">${S.attractions.length} / ${S.slots}</span></div>
+    <div class="stat ${rideClass}"><span>🎢 Загрузка аттр.</span><span class="val">${rideLoad}% ${rideIcon}</span></div>
+    <div class="stat ${foodClass}"><span>🍽️ Загрузка еды</span><span class="val">${foodLoad}% ${foodIcon}</span></div>
+  `;
+
+  const warn = S.actionsLeft <= 0 ? " warn" : "";
+  dayBadge.innerHTML = `📅 День ${S.day} • ⚡ Действий: <span class="actions${warn}">${S.actionsLeft}</span>`;
+}
+
+function canAct() {
+  if (S.actionsLeft <= 0) {
+    alert("⚠️ На сегодня действия закончились! Нажми «💤 Закончить день».");
+    return false;
+  }
+  return true;
+}
+
+function useAction() {
+  S.actionsLeft--;
+  renderStats();
+}
+
+/* =========================================================
+   ГЛАВНОЕ МЕНЮ
+   ========================================================= */
+function showMainMenu() {
+  if (S.gameOver) return showGameOver();
+
+  renderStats();
+  const noActions = S.actionsLeft <= 0;
+  const expandPrice = expansionPrice();
+
+  menuEl.innerHTML = `
+    <div class="sub-title">Что делаешь? (${S.actionsLeft} действий)</div>
+    <div class="actions">
+      <button class="act primary" onclick="showBuildMenu()" ${noActions ? "disabled" : ""}>🎢 Построить аттракцион / ларёк</button>
+      <button class="act" onclick="showHireMenu()" ${noActions ? "disabled" : ""}>👥 Нанять персонал / охрану</button>
+      <button class="act" onclick="showInsuranceMenu()" ${noActions ? "disabled" : ""}>📄 Купить страховку</button>
+      <button class="act" onclick="showRepairMenu()" ${noActions ? "disabled" : ""}>🔧 Починить аттракционы</button>
+      <button class="act success" onclick="doAd()" ${noActions ? "disabled" : ""}>📢 Дать рекламу (3 000 ₽)</button>
+      <button class="act" onclick="expandPark()" ${noActions ? "disabled" : ""}>🎨 Расширить парк (${fmt(expandPrice)})</button>
+      <button class="act" onclick="showPark()">🏞️ Посмотреть парк</button>
+      <button class="act primary" onclick="endDay()">💤 Закончить день</button>
+    </div>
+  `;
+}
+
+function showPark() {
+  renderStats();
+  const visitors = forecastVisitors();
+  const cap = totalCapacity();
+  const foodCap = totalFoodCapacity();
+  const rideLoad = cap > 0 ? Math.round(visitors / cap * 100) : 0;
+  const foodLoad = foodCap > 0 ? Math.round(visitors / foodCap * 100) : 0;
+
+  let html = `<div class="park"><h4>🏞️ Парк (${S.attractions.length} / ${S.slots} слотов)</h4>`;
+  html += `<p><b>Прогноз посетителей:</b> ${visitors} 👥</p>`;
+  html += `<p><b>Загрузка аттракционов:</b> ${rideLoad}% ${rideLoad <= 70 ? "✅" : rideLoad <= 100 ? "⚠️" : "🚨"}</p>`;
+  html += `<p><b>Загрузка ларьков:</b> ${foodLoad}% ${foodLoad <= 70 ? "✅" : foodLoad <= 100 ? "⚠️" : "🚨"}</p>`;
+
+  if (S.attractions.length === 0) {
+    html += `<p style="color:#888;">Пока пусто.</p>`;
+  } else {
+    const rides = S.attractions.filter(a => a.type === "ride");
+    const foods = S.attractions.filter(a => a.type === "food");
+
+    if (rides.length > 0) {
+      html += `<h4>🎢 Аттракционы (${rides.length}):</h4><ul>`;
+      rides.forEach(a => {
+        html += `<li>${a.name} ${a.broken ? "🔴 СЛОМАН" : ""}
+          <span class="hint">Вместимость: ${a.capacity}/день, доход: +${a.income} ₽/день</span>
+        </li>`;
+      });
+      html += `</ul>`;
+    }
+
+    if (foods.length > 0) {
+      html += `<h4>🍔 Ларьки (${foods.length}):</h4><ul>`;
+      foods.forEach(a => {
+        html += `<li>${a.name} ${a.broken ? "🔴 СЛОМАН" : ""}
+          <span class="hint">Обслуживает: ${a.capacity} порций/день, доход: +${a.income} ₽/день</span>
+        </li>`;
+      });
+      html += `</ul>`;
+    }
+  }
+  html += `</div>`;
+
+  html += `<div class="park"><h4>👥 Персонал (${S.staff.length})</h4>`;
+  if (S.staff.length === 0) html += `<p style="color:#888;">Никого не нанял.</p>`;
+  else {
+    html += `<ul>`;
+    S.staff.forEach(s => { html += `<li>${s.name} — ${s.desc}</li>`; });
+    html += `</ul>`;
+  }
+  html += `</div>`;
+
+  html += `<button class="back" onclick="showMainMenu()">← Назад</button>`;
+  menuEl.innerHTML = html;
+}
+
+/* =========================================================
+   ПОСТРОЙКА
+   ========================================================= */
+function showBuildMenu() {
+  if (!canAct()) return;
+  renderStats();
+  const available = ATTRACTIONS.filter(a => a.repReq <= S.rep);
+
+  let html = `<div class="sub-title">🎢 Аттракционы (репутация ${S.rep})</div>`;
+  html += `<div class="log"><p>Слотов занято: <b>${S.attractions.length} / ${S.slots}</b></p></div>`;
+  html += `<div class="actions">`;
+  available.forEach((a, i) => {
+    const canAfford = S.money >= a.price;
+    const already = S.attractions.find(x => x.name === a.name);
+    let label = `${a.name} — ${fmt(a.price)}${already ? " ✅" : ""}\n+${a.income} ₽/день`;
+    if (a.type === "ride") label += `, вместимость ${a.capacity}/день`;
+    else label += `, ${a.capacity} порций/день`;
+    if (a.joy) label += `, +${a.joy} 😊`;
+    if (a.food) label += `, +${a.food} 🍔`;
+    html += `<button class="act ${canAfford && !already ? 'primary' : ''}" onclick="build(${i})" ${!canAfford || already ? "disabled" : ""}>${label}</button>`;
+  });
+  html += `</div>`;
+  html += `<button class="back" onclick="showMainMenu()">← Назад</button>`;
+  menuEl.innerHTML = html;
+  window._availableAttractions = available;
+}
+
+function build(idx) {
+  if (!canAct()) return;
+
+  if (S.attractions.length >= S.slots) {
+    const price = expansionPrice();
+    const wantExpand = confirm(
+      `⚠️ Свободных слотов нет!\n\n` +
+      `Всего слотов: ${S.slots}\n` +
+      `Занято: ${S.attractions.length}\n\n` +
+      `Расширить парк за ${price.toLocaleString("ru-RU")} ₽?\n` +
+      `(+1 слот, +15 😊, +8 ⭐)`
+    );
+    if (wantExpand) {
+      showMainMenu();
+      setTimeout(() => expandPark(), 100);
+    }
+    return;
+  }
+
+  const a = window._availableAttractions[idx];
+  if (!a || S.money < a.price) return;
+  S.money -= a.price;
+  S.attractions.push({...a, broken: false});
+  S.joy = Math.min(100, S.joy + (a.joy || 0));
+  S.food = Math.min(100, S.food + (a.food || 0));
+  S.rep += a.type === "ride" ? 5 : 3;
+  useAction();
+
+  clearLog();
+  addLog(`✅ Построено: <b>${a.name}</b>`, "good");
+  addLog(`💰 Потрачено: ${fmt(a.price)}`, "money");
+  addLog(`📈 Доход: +${a.income} ₽/день`, "info");
+  if (a.type === "ride") addLog(`🎟️ Вместимость: ${a.capacity} чел./день`, "info");
+  else addLog(`🍔 Обслуживает: ${a.capacity} порций/день`, "info");
+  if (a.joy) addLog(`😊 Радость: +${a.joy}`, "good");
+  if (a.food) addLog(`🍔 Сытость: +${a.food}`, "good");
+  addLog(`🏞️ Слотов занято: ${S.attractions.length} / ${S.slots}`, "info");
+  addLog(`⚡ Осталось действий: ${S.actionsLeft}`, "info");
+  showMainMenu();
+}
+
+/* =========================================================
+   ПЕРСОНАЛ
+   ========================================================= */
+function showHireMenu() {
+  if (!canAct()) return;
+  renderStats();
+  let html = `<div class="sub-title">👥 Нанять персонал</div><div class="actions">`;
+  STAFF.forEach((s, i) => {
+    const canAfford = S.money >= s.price;
+    const already = S.staff.find(x => x.name === s.name);
+    let label = `${s.name} — ${fmt(s.price)}\n${s.desc}`;
+    if (s.salary) label += `, зарплата ${s.salary} ₽/день`;
+    if (already) label += " ✅";
+    html += `<button class="act ${canAfford && !already ? 'success' : ''}" onclick="hire(${i})" ${!canAfford || already ? "disabled" : ""}>${label}</button>`;
+  });
+  html += `</div><button class="back" onclick="showMainMenu()">← Назад</button>`;
+  menuEl.innerHTML = html;
+}
+
+function hire(idx) {
+  if (!canAct()) return;
+  const s = STAFF[idx];
+  if (S.money < s.price) return;
+  S.money -= s.price;
+  S.staff.push({...s});
+  useAction();
+
+  clearLog();
+  addLog(`✅ Нанят: <b>${s.name}</b>`, "good");
+  addLog(`💰 Потрачено: ${fmt(s.price)}`, "money");
+  if (s.salary) addLog(`💸 Зарплата: ${s.salary} ₽/день`, "money");
+  if (s.joy) addLog(`😊 Даёт +${s.joy} 😊 каждый день`, "good");
+  if (s.food) addLog(`🍔 Даёт +${s.food} 🍔 каждый день`, "good");
+  addLog(`⚡ Осталось действий: ${S.actionsLeft}`, "info");
+  showMainMenu();
+}
+
+/* =========================================================
+   СТРАХОВКА
+   ========================================================= */
+function showInsuranceMenu() {
+  if (!canAct()) return;
+  renderStats();
+  menuEl.innerHTML = `
+    <div class="sub-title">📄 Страховка</div>
+    <div class="actions">
+      <button class="act" onclick="buyInsurance('fire', 30000)" ${S.money < 30000 || S.insurance.fire || S.insurance.full ? "disabled" : ""}>
+        🔥 Пожарное — 30 000 ₽ ${S.insurance.fire ? "✅" : ""}
+      </button>
+      <button class="act" onclick="buyInsurance('theft', 25000)" ${S.money < 25000 || S.insurance.theft || S.insurance.full ? "disabled" : ""}>
+        🥷 От кражи — 25 000 ₽ ${S.insurance.theft ? "✅" : ""}
+      </button>
+      <button class="act primary" onclick="buyInsurance('full', 80000)" ${S.money < 80000 || S.insurance.full ? "disabled" : ""}>
+        📄 Полное — 80 000 ₽ ${S.insurance.full ? "✅" : ""}
+      </button>
+    </div>
+    <button class="back" onclick="showMainMenu()">← Назад</button>
+  `;
+}
+
+function buyInsurance(type, price) {
+  if (!canAct()) return;
+  if (S.money < price) return;
+  S.money -= price;
+  S.insurance[type] = true;
+  useAction();
+
+  clearLog();
+  const names = { fire: "пожарное", theft: "от кражи", full: "полное" };
+  addLog(`✅ Куплена страховка: <b>${names[type]}</b>`, "good");
+  addLog(`💰 Потрачено: ${fmt(price)}`, "money");
+  addLog(`⚡ Осталось действий: ${S.actionsLeft}`, "info");
+  showMainMenu();
+}
+
+/* =========================================================
+   РЕМОНТ
+   ========================================================= */
+function showRepairMenu() {
+  if (!canAct()) return;
+  renderStats();
+  const broken = S.attractions.filter(a => a.broken);
+
+  let html = `<div class="sub-title">🔧 Ремонт</div>`;
+  if (broken.length === 0) {
+    html += `<div class="log"><p>Все аттракционы работают ✅</p></div>`;
+  } else {
+    html += `<div class="actions">`;
+    broken.forEach((a, i) => {
+      const cost = Math.floor(a.price * 0.3);
+      const canAfford = S.money >= cost;
+      html += `<button class="act danger" onclick="repair(${i}, ${cost})" ${!canAfford ? "disabled" : ""}>
+        ${a.name} — ремонт ${fmt(cost)}
+      </button>`;
+    });
+    html += `</div>`;
+  }
+  html += `<button class="back" onclick="showMainMenu()">← Назад</button>`;
+  menuEl.innerHTML = html;
+  window._brokenAttractions = broken;
+}
+
+function repair(idx, cost) {
+  if (!canAct()) return;
+  const a = window._brokenAttractions[idx];
+  if (!a || S.money < cost) return;
+  S.money -= cost;
+  a.broken = false;
+  useAction();
+
+  clearLog();
+  addLog(`🔧 Отремонтировано: <b>${a.name}</b>`, "good");
+  addLog(`💰 Потрачено: ${fmt(cost)}`, "money");
+  addLog(`⚡ Осталось действий: ${S.actionsLeft}`, "info");
+  showMainMenu();
+}
+
+/* =========================================================
+   РЕКЛАМА
+   ========================================================= */
+function doAd() {
+  if (!canAct()) return;
+  if (S.money < 3000) { alert("Не хватает денег!"); return; }
+  S.money -= 3000;
+  S.visitors += 15;
+  useAction();
+
+  clearLog();
+  addLog(`📢 Реклама! +15 посетителей (действует 1 день)`, "good");
+  addLog(`💰 Потрачено: 3 000 ₽`, "money");
+  addLog(`⚡ Осталось действий: ${S.actionsLeft}`, "info");
+  showMainMenu();
+}
+
+/* =========================================================
+   РАСШИРЕНИЕ ПАРКА
+   ========================================================= */
+function expandPark() {
+  if (!canAct()) return;
+
+  const price = expansionPrice();
+
+  if (S.slots >= 20) {
+    alert("🏞️ Территория парка максимальна — 20 слотов!");
+    return;
+  }
+
+  if (S.money < price) {
+    alert(`Не хватает денег! Нужно ${price.toLocaleString("ru-RU")} ₽.`);
+    return;
+  }
+
+  S.money -= price;
+  S.slots++;
+  S.expansions++;
+  S.joy = Math.min(100, S.joy + 15);
+  S.rep += 8;
+  useAction();
+
+  clearLog();
+  addLog(`🎨 <b>Расширил парк!</b>`, "good");
+  addLog(`🏞️ Слотов теперь: <b>${S.slots}</b>`, "info");
+  addLog(`💰 Потрачено: ${fmt(price)}`, "money");
+  addLog(`😊 Радость: +15, ⭐ Репутация: +8`, "good");
+  addLog(`⚡ Осталось действий: ${S.actionsLeft}`, "info");
+
+  const nextPrice = expansionPrice();
+  addLog(`📈 Следующее расширение: ${fmt(nextPrice)}`, "info");
+
+  showMainMenu();
+}
+
+/* =========================================================
+   КОНЕЦ ДНЯ
+   ========================================================= */
+function endDay() {
+  clearLog();
+  addLog(`<h4>📅 Итоги дня ${S.day}</h4>`, "info");
+
+  const d = calculateDay();
+
+  addLog(`<h4>💰 Расчёт дохода</h4>`);
+  addLog(`👥 Посетителей: <b>${d.visitors}</b>`);
+  addLog(`   ├─ база: ${d.baseVisitors}`, "small");
+  addLog(`   ├─ от аттракционов: ${d.fromRides}`, "small");
+  addLog(`   └─ от бонусов: ${d.fromBonus}`, "small");
+
+  addLog(`🎟️ Вход: ${d.visitors} × 20 ₽ = <b>${fmt(d.entryIncome)}</b>`, "small");
+  addLog(`🍔 Еда: ${d.fedVisitors} из ${d.visitors} × 10 ₽ = <b>${fmt(d.foodIncome)}</b>`, "small");
+  addLog(`📊 База: <b>${fmt(d.base)}</b>`);
+
+  addLog(`✨ Бонусы:`);
+  addLog(`   ├─ 😊 Радость ${Math.round(S.joy)} → ×${d.joyBonus.toFixed(3)}`, "small");
+  addLog(`   ├─ 🍔 Сытость ${Math.round(S.food)} → ×${d.foodBonus.toFixed(3)}`, "small");
+  addLog(`   └─ ⭐ Репутация ${Math.round(S.rep)} → ×${d.repBonus.toFixed(3)}`, "small");
+
+  addLog(`💵 <b>Итого доход: ${fmt(d.total)}</b>`, "good");
+  S.money += d.total;
+
+  const salaries = S.staff.reduce((sum, s) => sum + s.salary, 0);
+  if (salaries > 0) {
+    addLog(`💸 Зарплаты: -${fmt(salaries)}`, "money");
+    S.money -= salaries;
+  }
+
+  addLog(`<h4>⚠️ Загрузка парка</h4>`);
+  addLog(d.rideStatus, d.joyDelta > 0 ? "good" : d.joyDelta < 0 ? "bad" : "info");
+  addLog(d.foodStatus, d.foodDelta > 0 ? "good" : d.foodDelta < 0 ? "bad" : "info");
+
+  addLog(`<h4>📈 Изменения</h4>`);
+  if (d.joyDelta !== 0) {
+    S.joy += d.joyDelta;
+    addLog(`😊 Радость: ${d.joyDelta > 0 ? "+" : ""}${d.joyDelta}`, d.joyDelta > 0 ? "good" : "bad");
+  }
+  if (d.foodDelta !== 0) {
+    S.food += d.foodDelta;
+    addLog(`🍔 Сытость: ${d.foodDelta > 0 ? "+" : ""}${d.foodDelta}`, d.foodDelta > 0 ? "good" : "bad");
+  }
+  if (d.repDelta !== 0) {
+    S.rep += d.repDelta;
+    addLog(`⭐ Репутация: ${d.repDelta > 0 ? "+" : ""}${d.repDelta}`, d.repDelta > 0 ? "good" : "bad");
+  }
+
+  // Бонусы от персонала (каждый день)
+  let staffJoy = 0, staffFood = 0;
+  S.staff.forEach(s => {
+    staffJoy += s.joy || 0;
+    staffFood += s.food || 0;
+  });
+  if (staffJoy > 0) {
+    S.joy += staffJoy;
+    addLog(`👥 Персонал: +${staffJoy} 😊`, "good");
+  }
+  if (staffFood > 0) {
+    S.food += staffFood;
+    addLog(`👥 Персонал: +${staffFood} 🍔`, "good");
+  }
+
+  S.joy = Math.max(0, Math.min(100, S.joy));
+  S.food = Math.max(0, Math.min(100, S.food));
+  S.rep = Math.max(0, Math.min(1000, S.rep));
+
+  S.visitors = 0;
+
+  // Случайное событие — 40% хорошее, 40% плохое, 20% без события
+  const eventRoll = Math.random();
+  if (eventRoll < 0.40) {
+    addLog(`<h4>😊 Хорошее событие дня</h4>`);
+    const ev = weightedRandom(GOOD_EVENTS);
+    addLog(ev.effect(), "good");
+  } else if (eventRoll < 0.80) {
+    addLog(`<h4>⚠️ Плохое событие дня</h4>`);
+    const ev = weightedRandom(BAD_EVENTS);
+    addLog(ev.effect(), "bad");
+  } else {
+    addLog(`<h4>😐 Событие дня</h4>`);
+    addLog(`Спокойный день без происшествий.`, "info");
+  }
+
+  S.day++;
+  S.actionsLeft = 2;
+
+  if (S.money < 0) {
+    S.gameOver = true;
+    showGameOver();
+    return;
+  }
+
+  addLog(`<h4>📊 Статус после дня</h4>`);
+  addLog(`💰 Деньги: <b>${fmt(S.money)}</b>`);
+  addLog(`⭐ Репутация: ${S.rep} / 1000`);
+  addLog(`😊 Радость: ${S.joy} / 100`);
+  addLog(`🍔 Сытость: ${S.food} / 100`);
+  addLog(`⚡ Новый день — 2 действия доступны!`, "good");
+
+  renderStats();
+  showMainMenu();
+}
+
+/* =========================================================
+   КОНЕЦ ИГРЫ
+   ========================================================= */
+function showGameOver() {
+  renderStats();
+  menuEl.innerHTML = `
+    <div class="feedback bad">💀 БАНКРОТСТВО!</div>
+    <div class="log">
+      <p>Ты продержался <b>${S.day}</b> дней.</p>
+      <p>Итоговая репутация: <b>${S.rep} ⭐</b></p>
+      <p>Аттракционов: <b>${S.attractions.length}</b></p>
+      <p>Денег: <b>${fmt(S.money)}</b></p>
+    </div>
+    <button class="back primary" onclick="location.reload()">🔄 Начать заново</button>
+  `;
+}
+
+/* =========================================================
+   СТАРТ
+   ========================================================= */
+clearLog();
+addLog(`<b>🎢 Добро пожаловать в парк развлечений!</b>`, "info");
+addLog(`Ты — директор старого заброшенного парка.`);
+addLog(`У тебя <b>${fmt(S.money)}</b> и 50 ⭐ репутации.`);
+addLog(`🏞️ Территория: <b>${S.slots} слотов</b>.`);
+addLog(`⚡ В день — <b>2 действия</b>!`, "good");
+addLog(`Цель: развить парк до максимума!`, "good");
+
+showMainMenu();
+</script>
+</body>
+</html>
